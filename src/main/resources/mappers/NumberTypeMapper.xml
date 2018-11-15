@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.NumberTypeMapper">
+    <!-- 查询靓号类型 -->
+	<select id="selectList" resultType="com.bdxh.kmsale.bean.NumberType">
+	   select level_type from code_number_type
+	</select>
+	
+	<!-- 多条件查询，显示手机号信息(分页) -->
+	<select id="numberList" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.NumberPo">
+	
+SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(SELECT a.id AS "id",
+	   Sim_Number  AS "simNumber",
+       a.Status      AS "status",
+       D.Code_Desc AS "statusDesc",
+       a.Branch_Id   "branchId",
+       a.Card_Type   AS "cardType",
+       C.Code_Desc AS "cardTypeDesc",
+       Oper_Type   AS "operType",
+       B.Code_Desc AS "operTypeDesc",
+       Oper_Date   AS "operDate",	
+       Insert_Date AS "insertDate",
+       Deposit     AS "deposit",
+       e.branch_name AS "branchName",
+       decode(a.branch_id,1,0) AS "isAssign",
+       a.sn_no "snNo"
+  FROM (select * from T_Card where oper_type in (0,1,3,4))  a,
+       Code_Oper_Type       b,
+       Code_Card_Type       c,
+       Code_Resource_Status d,
+       T_BRANCH e
+ WHERE A.Oper_Type = B.Code_Id(+)
+   AND A.Card_Type = C.Code_Id(+)
+   AND A.Status = D.Code_Id(+)
+   and a.branch_id = e.id(+)
+    )  r
+           where ROWNUM &lt;= #{endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{startPos}
+	  <if test="svcnumber1 !=null and svcnumber1 != ''">
+			and svc_number = #{svcnumber1}
+		</if>
+		<if test="svcnumber2 !=null and svcnumber2 != ''">
+			and svc_number like '%#{svcnumber2}%'
+		</if>
+		<if test="ksvcnumber !=null and ksvcnumber != ''">
+			and svc_number like '%#{ksvcnumber}'
+		</if>
+		<if test="jsvcnumber !=null and jsvcnumber != ''">
+			and svc_number like '#{jsvcnumber}%'
+		</if>
+		<if test="leveltype !=null and leveltype != ''">
+			and number_level = #{leveltype}
+		</if>
+		<if test="opertype !=null and opertype != 0">
+			and oper_type = #{opertype}
+		</if>
+		<if test="snno !=null and snno != ''">
+			and sn_no like '%${snno}%'
+		</if>
+		<if test="isshare !=null and isshare != ''">
+			and is_share like '%${isshare}%'
+		</if>
+		<if test="status !=null and status != ''">
+			and status = #{status}
+		</if>
+	</select>
+	
+	<!-- 查询总条数 -->
+	<select id="selectCountAll" resultType="java.lang.Integer" parameterType="com.bdxh.kmsale.bean.NumberPo">
+	  select count(*) from T_Number
+	</select>
+	
+	<!-- 多条件查询，满足条件的条数 -->
+	<select id="seleclCount" resultType="java.lang.Integer" parameterType="com.bdxh.kmsale.bean.NumberPo">
+	  select count(*) from T_Number
+	  where 1=1
+	  <if test="svcnumber1 !=null and svcnumber1 != ''">
+			and svc_number = #{svcnumber1}
+		</if>
+		<if test="svcnumber2 !=null and svcnumber2 != ''">
+			and svc_number like '%#{svcnumber2}%'
+		</if>
+		<if test="ksvcnumber !=null and ksvcnumber != ''">
+			and svc_number like '%#{ksvcnumber}'
+		</if>
+		<if test="jsvcnumber !=null and jsvcnumber != ''">
+			and svc_number like '#{jsvcnumber}%'
+		</if>
+		<if test="leveltype !=null and leveltype != ''">
+			and number_level = #{leveltype}
+		</if>
+		<if test="opertype !=null and opertype != 0">
+			and oper_type = #{opertype}
+		</if>
+		<if test="snno !=null and snno != ''">
+			and sn_no like '%#{snno}%'
+		</if>
+		<if test="isshare !=null and isshare != ''">
+			and is_share like '%#{isshare}%'
+		</if>
+		<if test="status !=null and status != ''">
+			and status = #{status}
+		</if>
+	</select>
+
+</mapper>

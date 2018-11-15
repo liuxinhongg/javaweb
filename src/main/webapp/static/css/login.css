@@ -1,0 +1,153 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+#login {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	min-width: 500px;
+}
+
+.bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: -1;
+}
+
+.bg img {
+	width: 100%;
+	height: 100%;
+	min-width: 700px;
+}
+
+.LoginBox {
+	min-width: 500px;
+	width: 34%;
+	height: 380px;
+	border: 1px solid #bbb;
+	position: absolute;
+	top: 50%;
+	left: 33%;
+	margin-top: -190px;
+	margin-left: -5%;
+	background: #f8f8f8;
+	border-radius: 8px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+	overflow: hidden;
+	opacity: 0.9;
+}
+
+.LoginTop p {
+	width: 100%;
+	height: 80px;
+	text-align: center;
+	line-height: 80px;
+	font-size: 26px;
+	color: #da282f;
+	font-weight: bold;
+}
+
+.LoginContent {
+	width: 90%;
+	height: 240px;
+	margin: auto;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.ContentLeft {
+	width: 40%;
+	height: auto;
+}
+
+.ContentLeft img {
+	width: 90%;
+	height: auto;
+	margin: 18%;
+}
+
+.JBcolor {
+	height: 260px;
+	width: 1%;
+	margin-left: 8%;
+	background: linear-gradient(to right, #ccc, #fff);
+}
+
+.ContentRight {
+	width: 50%;
+	height: 240px;
+	margin-left: 8%;
+}
+
+.userName {
+	width: 100%;
+	height: 50px;
+	background: rgb(238, 238, 238);
+	margin-top: 16px;
+	display: flex;
+	justify-content: flex-start;
+}
+.yzImg{
+	width: 35%;
+	height: 35px;
+	margin: 7px;
+	background: red;
+}
+.yzImg img{
+	width: 100%;
+	height: 35px;
+}
+.userName .IconImg {
+	width: 25px;
+	height: 25px;
+	margin-top: 10px;
+	margin: 10px;
+}
+
+.userName input {
+	width: 73%;
+	height: 35px;
+	line-height: 35px;
+	margin-top: 8px;
+	border: none;
+	outline: none;
+	text-indent: 1em;
+	background: none;
+}
+
+.ReWrite {
+	width: 100%;
+	height: 20px;
+	font-size: 13px;
+	line-height: 20px;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 10px;
+}
+
+.DLBtn {
+	width: 100%;
+	height: 40px;
+	background: #da282f;
+	outline: none;
+	border: none;
+	color: #fff;
+	font-size: 20px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+
+.CZnew {
+	border: none;
+	outline: none;
+	background: none;
+	color: #2abeff;
+	cursor: pointer;
+}

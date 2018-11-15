@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.CardInMapper">
+    
+     <insert id="insertCardIn" parameterType="com.bdxh.kmsale.bean.inventory.CardInPo">
+		insert into T_Card_In a (
+			   SIM_NUMBER,
+			   INSERT_DATE,
+               OPER_ID,
+               BRANCH_ID
+		)
+		values(
+		       #{cardInPo.simNumber},
+			   SYSDATE,
+			   #{cardInPo.operId},
+			   #{cardInPo.branchId}
+		)
+	</insert>
+
+    <delete id="deleteCardInByOperId"  parameterType="java.lang.String">
+		delete T_Card_In where oper_id = #{operId}
+	</delete>
+
+	<select id="callImportCard"  parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE" useCache="false">
+          {#{result,mode=OUT,jdbcType=DECIMAL} = call f_card_in(
+               #{loginId, mode=IN}
+              )
+          }
+    </select>
+</mapper>

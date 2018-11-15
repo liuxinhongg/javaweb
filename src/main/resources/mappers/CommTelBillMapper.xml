@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.CommTelBillMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.CommTelBillPo" parameterType="com.bdxh.kmsale.domain.Paging">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.TELBILL_ID   as "telBillId",
+		       a.allowance as "allowance",
+		       a.comm_min    as "commMin",
+		       a.comm_max    as "commMax",
+		       a.OPER_ID  as "operId",
+		       a.status as "status",
+		       a.CREATE_DATE    as "createDate",
+		       a.ORD    as "ord"
+		  from CODE_COMM_TEL_BILL A 
+		ORDER BY ORD   
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}    
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" >
+	   select count(*) from CODE_COMM_TEL_BILL  
+	</select>
+	
+	<select id="getCommTelBillPoById" parameterType="java.lang.Integer" resultType="com.bdxh.kmsale.bean.code.CommTelBillPo">
+		 select a.TELBILL_ID   as "telBillId",
+		       a.allowance as "allowance",
+		       a.comm_min    as "commMin",
+		       a.comm_max    as "commMax",
+		       a.OPER_ID  as "operId",
+		       a.status as "status",
+		       a.CREATE_DATE    as "createDate",
+		       a.ORD    as "ord"
+		  from CODE_COMM_TEL_BILL A = #{telBillId}
+	</select>
+	
+	<insert id="insertCommTelBillPo" parameterType="com.bdxh.kmsale.bean.code.CommTelBillPo">
+		insert into CODE_COMM_TEL_BILL a (
+		       a.TELBILL_ID,
+			   a.allowance,
+			   a.comm_min,
+			   a.comm_max,
+			   a.OPER_ID,
+			   a.status,
+			   a.CREATE_DATE,
+			   a.ORD
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{commTelBillPo.allowance},
+			   #{commTelBillPo.commMin},
+			   #{commTelBillPo.commMax},
+			   #{commTelBillPo.operId},
+			   #{commTelBillPo.status},
+			   SYSDATE,
+			   #{commTelBillPo.ord}
+		)
+	</insert>
+	
+	<update id="updateCommTelBillPo" parameterType="com.bdxh.kmsale.bean.code.CommTelBillPo">
+		update CODE_COMM_TEL_BILL a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="commTelBillPo.allowance != null and commTelBillPo.allowance !=''">
+                a.allowance = #{commTelBillPo.allowance},
+            </if>
+            <if test="commTelBillPo.commMin != null and commTelBillPo.commMin !=''">
+                a.comm_min = #{commTelBillPo.commMin},
+            </if>
+            <if test="commTelBillPo.commMax != null and commTelBillPo.commMax !=''">
+                a.comm_max = #{commTelBillPo.commMax},
+            </if>
+             <if test="commTelBillPo.operId != null and commTelBillPo.operId !=''">
+                a.OPER_ID = #{commTelBillPo.operId},
+            </if>
+             <if test="commTelBillPo.status != null">
+                a.status = #{commTelBillPo.status},
+            </if>
+            <if test="commTelBillPo.ord != null">
+                a.CREATE_DATE = #{commTelBillPo.ord},
+            </if>
+            <if test="commTelBillPo.createDate != null">
+                a.ORD = #{commTelBillPo.createDate},
+            </if>
+        </trim>
+		 where  a.TELBILL_ID = #{commTelBillPo.telBillId}
+	</update>
+	
+	<update id="deleteCommTelBillPo" parameterType="java.lang.Integer">
+		update CODE_COMM_TEL_BILL a  set a.status = 0 where  a.TELBILL_ID = #{telBillId}
+	</update>
+	
+</mapper>

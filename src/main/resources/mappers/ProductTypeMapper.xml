@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.ProductTypeMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.ProductTypePo" parameterType="com.bdxh.kmsale.domain.Paging">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.code_id   as "codeId",
+		       a.code_desc as "codeDesc",
+		       a.status    as "status",
+		       a.ord    as "ord",
+		       a.CREATE_DATE  as "createDate",
+		       a.oper_id as "operId",
+		       a.once_rate    as "onceRate"
+		  from CODE_PRODUCT_TYPE A 
+		ORDER BY ord   
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="java.lang.Integer">
+	   select count(*) from CODE_PRODUCT_TYPE 
+	</select>
+	
+	<select id="getProductTypePoById" parameterType="java.lang.String" resultType="com.bdxh.kmsale.bean.code.ProductTypePo">
+		 select a.code_id   as "codeId",
+		       a.code_desc as "codeDesc",
+		       a.status    as "status",
+		       a.ord    as "ord",
+		       a.CREATE_DATE  as "createDate",
+		       a.oper_id as "operId",
+		       a.once_rate    as "onceRate"
+		  from CODE_PRODUCT_TYPE A  
+		where  a.code_id = #{codeId}
+	</select>
+	
+	<insert id="insertProductTypePo" parameterType="com.bdxh.kmsale.bean.code.ProductTypePo">
+		insert into CODE_PRODUCT_TYPE a (
+		       a.code_id,
+			   a.code_desc,
+			   a.status,
+			   a.ord,
+			   a.CREATE_DATE,
+			   a.oper_id,
+			   a.once_rate
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{productTypePo.codeDesc},
+			   #{productTypePo.status},
+			   #{productTypePo.ord},
+			   SYSDATE,
+			   #{productTypePo.operId},
+			   #{productTypePo.onceRate}
+		)
+	</insert>
+	
+	<update id="updateProductTypePo" parameterType="com.bdxh.kmsale.bean.code.ProductTypePo">
+		update CODE_PRODUCT_TYPE a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="productTypePo.codeDesc != null and productTypePo.codeDesc !=''">
+                a.code_desc = #{productTypePo.codeDesc},
+            </if>
+            <if test="productTypePo.status != null">
+                a.status = #{productTypePo.status},
+            </if>
+            <if test="productTypePo.ord != null">
+                a.ord = #{productTypePo.ord},
+            </if>
+             <if test="productTypePo.createDate != null">
+                a.CREATE_DATE = #{productTypePo.createDate},
+            </if>
+             <if test="productTypePo.operId != null and productTypePo.operId !='' ">
+                a.oper_id = #{productTypePo.operId},
+            </if>
+            <if test="productTypePo.onceRate != null">
+                a.once_rate = #{productTypePo.onceRate},
+            </if>
+        </trim>
+		 where  a.code_id = #{productTypePo.codeId}
+	</update>
+	
+	<update id="deleteProductTypePo" parameterType="java.lang.String">
+		update CODE_PRODUCT_TYPE a set a.status = 0 where  a.code_id = #{codeId}
+	</update>
+	
+</mapper>

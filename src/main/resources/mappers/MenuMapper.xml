@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.system.MenuMapper">
+<!-- 菜单维护 开始 -->
+
+<!--查询单个菜单信息 -->
+ <select id="selectMenu" resultType="com.bdxh.kmsale.bean.system.Menu">
+	 select a.module_id "moduleId",
+	 		a.module_type "moduleType",
+	 		a.parent_id "parentId",
+	 		a.module_name "moduleName",
+	 		a.ord "ord",
+	 		a.url "url",
+			a.toggle "toggle"
+	  from sc_menu a
+	  where a.module_id=#{moduleId}
+	</select>
+
+	<!--根据父节点查询菜单列表   不控制用户权限-->
+ 	<select id="selectMenuList" 
+ 	resultType="com.bdxh.kmsale.bean.system.Menu" 
+ 	parameterType="java.lang.String">
+	 select a.module_id "moduleId",
+	        a.module_name "moduleName",
+	 		a.module_type "moduleType",
+	 		a.parent_id "parentId",
+	 		a.ord "ord",a.url "url",
+			a.toggle "toggle"
+		from sc_menu a
+		where 1=1
+		<if test="parentId!=null">
+		and a.parent_id=#{parentId}
+		</if>
+		order by a.ord
+	</select> 
+	
+	<!--菜单新增-->
+	<insert id="insertMenu" parameterType="com.bdxh.kmsale.bean.system.Menu">
+		insert into sc_menu (
+		module_id,module_type,parent_id,module_name,ord,url,toggle
+		)values (
+		#{moduleId},#{moduleType},
+		#{parentId},#{moduleName},
+		#{ord},#{url},#{toggle})
+	</insert>
+	
+	<!--菜单拖拽更新  -->
+	 <update id="updateMenu" parameterType="com.bdxh.kmsale.bean.system.Menu">
+		update sc_menu 
+		<set>
+		<if test="moduleType!=null">
+		module_type=#{moduleType},
+		</if>
+	    <if test="parentId!=null">
+		parent_id=#{parentId},
+		</if>
+		<if test="moduleName!=null">
+		module_name=#{moduleName},
+		</if>
+		<if test="ord!=null">
+		ord=#{ord},
+		</if>
+		<if test="url!=null">
+		url=#{url},
+		</if>
+    	<if test="toggle!=null">
+		toggle=#{toggle}
+		</if>
+		</set>
+		where module_id=#{moduleId}
+	</update> 
+	
+	<!-- 菜单删除-->
+	<delete id="deleteMenu" parameterType="java.lang.String">
+		delete from sc_menu where module_id=#{moduleId}
+	</delete>
+	
+		<!-- 根据父级ID删除菜单-->
+	<delete id="deleteMenuByParentId" parameterType="java.lang.String">
+		delete from sc_menu where parent_id=#{parentId}
+	</delete>
+	<!-- 菜单维护结束  -->
+</mapper>

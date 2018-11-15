@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.NumberInMapper">
+
+     <select id="getPage" parameterType="com.bdxh.kmsale.bean.NumberInPo"   resultType="com.bdxh.kmsale.bean.NumberInPo">
+     
+        SELECT * FROM (SELECT ROWNUM AS rowno,r.* FROM(SELECT SVC_NUMBER AS "svcNumber", SIM_NUMBER AS "simNumber", INSERT_DATE AS "insertDate",RETURN_REASON AS "returnReason" FROM T_Number_In
+           ORDER BY t.INSERT_DATE desc ) r
+           where ROWNUM &lt;= #{endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{startPos} 
+  	  <where>
+            <if test="numberInPo.operId !=null and numberInPo.operId!=''">
+                AND OPER_ID = #{numberInPo.operId}
+            </if>
+            <if test="numberInPo.svcNumber!=null and numberInPo.svcNumber!=''">
+                AND SVC_NUMBER = #{numberInPo.svcNumber}
+            </if>
+            <if test="numberInPo.simNumber!=null and numberInPo.simNumber!=''">
+                AND SIM_NUMBER = #{numberInPo.simNumber}
+            </if>
+             <if test="numberInPo.startTime!=null">
+                AND INSERT_DATE <![CDATA[ >=]]> #{numberInPo.startTime}
+            </if>
+             <if test="numberInPo.insertDate!=null">
+                AND INSERT_DATE <![CDATA[ <=]]> #{numberInPo.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCount"  
+    parameterType="com.bdxh.kmsale.bean.NumberInPo" 
+    resultType="java.lang.Long">
+        SELECT count(*) FROM T_Number_In
+        <where>
+            1=1
+           <if test="numberInPo.operId !=null and numberInPo.operId!=''">
+                AND OPER_ID = #{numberInPo.operId}
+            </if>
+            <if test="numberInPo.svcNumber!=null and numberInPo.svcNumber!=''">
+                AND SVC_NUMBER = #{numberInPo.svcNumber}
+            </if>
+            <if test="numberInPo.simNumber!=null and numberInPo.simNumber!=''">
+                AND SIM_NUMBER = #{numberInPo.simNumber}
+            </if>
+             <if test="numberInPo.startTime!=null">
+                AND INSERT_DATE <![CDATA[ >=]]> #{numberInPo.startTime}
+            </if>
+             <if test="numberInPo.insertDate!=null">
+                AND INSERT_DATE <![CDATA[ <=]]> #{numberInPo.endTime}
+            </if>
+        </where>
+    </select>
+    
+     <insert id="insertNumberIn" parameterType="com.bdxh.kmsale.bean.NumberInPo">
+		insert into T_Number_In (
+			   SVC_NUMBER,
+			   Sim_NUMBER,
+			   INSERT_DATE,
+               OPER_ID,
+               Branch_ID
+		)
+		values(
+		       #{numberInPo.svcNumber},
+			   #{numberInPo.simNumber},
+			   sysdate,
+			  #{numberInPo.operId},  
+			  #{numberInPo.branchId}
+		)
+	</insert>
+    
+       <!-- 强制导入手机号 -->
+    <insert id="insertMandatory" parameterType="com.bdxh.kmsale.bean.NumberInPo">
+       insert into T_Number_In (
+			   SVC_NUMBER,
+			   Sim_NUMBER,
+			   INSERT_DATE,
+               OPER_ID,
+        ) VALUES (
+               #{numberInPo.svcNumber},
+			   #{numberInPo.simNumber},
+			   SYSDATE,
+			   #{numberInPo.operId},  
+        )
+    </insert>
+
+     <delete id="deleteNumberInByOperId"  parameterType="java.lang.String">
+		delete T_Number_In where oper_id = #{operId}
+	</delete>
+
+	<select id="callImportNumber"  parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE" useCache="false">
+          {#{result,mode=OUT,jdbcType=DECIMAL} = call f_number_in(
+               #{cardType, mode=IN},
+               #{loginId, mode=IN}
+              )
+          }
+    </select>
+    
+    <select id="callImportNumberForce"  parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE" useCache="false">
+          {#{result,mode=OUT,jdbcType=DECIMAL} = call f_number_in(
+               #{svcNumber, mode=IN},
+               #{simNumber, mode=IN},
+               #{cardType, mode=IN},
+               #{loginId, mode=IN},
+               #{branchId, mode=IN},
+              )
+          }
+    </select>
+</mapper>

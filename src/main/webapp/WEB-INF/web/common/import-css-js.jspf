@@ -1,0 +1,12 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!-- 最终需要压缩、混淆、合并成一个CSS和一个JS -->
+<script>var ctx = '${ctx}',uid = '${user.id}',t='${versions}', domain = '${domain}',fileuploadURL='';
+chargeTeaPermission='${chargeTeaPermission}';
+</script>
+<link href="${ctx}/static/lirenkj/css/main.css?t=${versions}" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" charset="utf-8" src="${ctx}/static/assets/plugins/jquery-1.10.2.min.js?t=${versions}"></script>
+<script type="text/javascript" charset="utf-8" src="${ctx}/static/assets/plugins/jquery.json-2.2.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/js/session.js?t=${versions}"></script>
+<link rel="stylesheet" href="${ctx}/static/layui/css/layui.css?t=${versions}" media="all" />
+<link rel="stylesheet" href="${ctx}/static/css/font_eolqem241z66flxr.css?t=${versions}" media="all" />
+<link rel="stylesheet" href="${ctx}/static/css/main.css?t=${versions}" media="all" />

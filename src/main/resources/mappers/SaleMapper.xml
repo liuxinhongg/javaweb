@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.oper.SaleMapper">
+
+<!-- 模糊查询数量不分页 -->
+<!-- <select id="selectSaleCount" 
+parameterType="com.bdxh.kmsale.bean.oper.SaleBo">
+SELECT count(*)
+		FROM t_sale_plus a,
+		Code_Sale_Mode b
+		WHERE A.Sale_Mode = B.Code_Id
+		AND
+		nvl(A.Branch_Id,'10000000') IN
+		(SELECT Id Orgid FROM T_Branch START WITH Id = #{saleBo.orgId}  CONNECT BY PRIOR Id = Up_Id)
+		<if test="svcNumber!=null">
+			and a.svc_number= #{saleBo.svcNumber}	
+		</if>
+		<if test="sim!=null">
+			and a.sim= #{saleBo.sim}
+		</if>
+		<if test="noId!=null">
+			and a.no_id= #{saleBo.noId}
+		</if>
+		<if test="agentName!=null">
+			and a.login_name= #{saleBo.agentName}
+		</if>
+		<if test="saleDateStart!=null">
+			to_char(a.sale_date,'YYYY-MM-DD') &gt;= #{saleBo.saleDateStart}
+		</if>
+		<if test="saleDateEnd!=null">
+		[to_char(a.sale_date,'YYYY-MM-DD') &lt;= #{saleBo.saleDateEnd}
+		</if>
+		<if test="operName!=null">
+			and a.login_name= #{saleBo.operName}
+		</if>
+		<if test="saleDate!=null">
+		 to_char(a.sale_date,'YYYY-MM-DD') &lt;= #{saleBo.saleDate}
+		</if>
+		<if test="status!=null">
+			and a.status= #{saleBo.status}
+		</if>
+		<if test="productType!=null">
+			and a.product_Type= #{saleBo.productType}
+		</if>
+		<if test="loginId!=null">
+			and a.oper_id= #{saleBo.loginId}
+		</if>
+		order by a.sale_date desc,a.sale_id desc
+ </select>
+
+    模糊查询
+	<select id="selectSaleByCondition"
+		resultType="com.bdxh.kmsale.bean.oper.SalePo"
+		parameterType="java.util.HashMap">
+		select * from (SELECT rownum r,
+		A.Sale_Id AS "saleId",
+		A.Status AS "status",
+		A.Status AS "statusDesc",
+		A.Sale_Mode AS "saleMode",
+		B.Code_Desc AS "saleModeDesc",
+		A.No_Id AS "noId",
+		A.Number_Id AS "numberId",
+		A.Card_Id AS "cardId",
+		A.Svc_Number AS "svcNumber",
+		A.Sim AS "sim",
+		A.User_No AS "userNo",
+		nvl(A.Price,0) AS "price",
+		nvl(A.Price2,0) AS "price2",
+		nvl(A.Price3,0) AS "price3",
+		a.device_price as "devicePrice",
+		A.Sale_Date AS "saleDate",
+		A.Product_Id AS "productId",
+		A.Device_Id AS "deviceId",
+		A.Is_Active AS "isActive",
+		A.Four AS "four",
+		A.None_Four AS "noneFour",
+		A.Active AS "active",
+		A.Deduct AS "deduct",
+		A.Oper_Id AS "operId",
+		A.Branch_Id "orgId",
+		A.Product_Name "productName",
+		a.product_type "productType",
+		A.Device_Name "deviceName",
+		A.Agent_Name "agentName",
+		A.login_name "operName",
+		A.IMEI "imei",
+		a.rate_Cnt as "rateCnt",
+		a.sim_str as "simStr",
+		branch_name as "branchName",
+		A.oper_org_name as "operOrgName"
+		FROM t_sale_plus a,
+		Code_Sale_Mode b
+		WHERE A.Sale_Mode = B.Code_Id
+		AND
+		nvl(A.Branch_Id,'10000000') IN
+		(SELECT Id Orgid FROM T_Branch START WITH Id = #{saleBo.orgId}  CONNECT BY PRIOR Id = Up_Id)
+		<if test="svcNumber!=null">
+			and a.svc_number= #{saleBo.svcNumber}	
+		</if>
+		<if test="sim!=null">
+			and a.sim= #{saleBo.sim}
+		</if>
+		<if test="noId!=null">
+			and a.no_id= #{saleBo.noId}
+		</if>
+		<if test="agentName!=null">
+			and a.login_name= #{saleBo.agentName}
+		</if>
+		<if test="saleDateStart!=null">
+			<![CDATA[to_char(a.sale_date,'YYYY-MM-DD') &gt;= #{saleBo.saleDateStart}]]>
+		</if>
+		<if test="saleDateEnd!=null">
+			<![CDATA[to_char(a.sale_date,'YYYY-MM-DD') &lt;= #{saleBo.saleDateEnd}]]>
+		</if>
+		<if test="operName!=null">
+			and a.login_name= #{saleBo.operName}
+		</if>
+		<if test="saleDate!=null">
+		<![CDATA[to_char(a.sale_date,'YYYY-MM-DD') &lt;= #{saleBo.saleDate}]]>
+		</if>
+		<if test="status!=null">
+			and a.status= #{saleBo.status}
+		</if>
+		<if test="productType!=null">
+			and a.product_Type= #{saleBo.productType}
+		</if>
+		<if test="loginId!=null">
+			and a.oper_id= #{saleBo.loginId}
+		</if>
+		order by a.sale_date desc,a.sale_id desc
+		<if test="sortCol!=null">
+			,sortCol= #{saleBo.sortCol}
+		</if>
+		<if test="sortOrder!=null">
+			,sortOrder = #{saleBo.sortOrder}
+		</if>
+		and rownum&lt;= #{conditionResource.endPos} ) where r&gt;= #{conditionResource.startPos}
+	</select>
+	
+	根据sale_id删除销售记录
+	<delete id="deleteSaleById" parameterType="String">
+	 delete from t_sale where sale_id=#{saleId}
+	</delete>
+
+	新增的销售记录信息
+	<insert id="insertSale" 
+	parameterType="com.bdxh.kmsale.bean.oper.SaleBo">
+	insert into t_sale 
+	result,sale_mode,no_id,svc_number,
+	sim,sale_date,is_active,product_id,
+	oper_id,price,price2,price3,
+	device_id,imei,user_no
+	values (
+	#{saleBo.result},#{saleMode},#{noId},#{svcNumber},
+	#{sim},#{saleDate},#{isActive},#{productId},
+	#{operId},#{price},#{price2},#{price3},
+	#{deviceId},#{imei},#{userNo})
+	</insert>
+
+	查询出所有的配套设备
+	<select id="selectAllDeviceList" 
+	resultType="com.bdxh.kmsale.bean.code.DevicePo">
+		select 
+		t.device_id as "deviceId",
+		t.device_name as "deviceName"
+		from t_device t where t.status = 1
+	</select>
+
+	查询出所有的套餐
+	<select id="selectAllProductList" 
+	resultType="com.bdxh.kmsale.bean.code.ProductPo">
+		select t.product_id as "productId",
+		t.product_name as "productName"
+		from t_product t
+		where
+		t.is_view= 1
+		order by
+		product_name
+	</select>
+
+	查询用户是否拥有所有的查阅权限
+	<select id="selectViewRoleUser" resultType="Integer"
+		parameterType="String">
+		SELECT COUNT(1) FROM T_OPER_SUPER A WHERE A.OPER_ID =#{operId}
+	</select>  -->
+
+</mapper>

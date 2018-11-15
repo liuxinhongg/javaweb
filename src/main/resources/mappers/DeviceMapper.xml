@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.DeviceMapper">
+	
+	<!-- 多条件查询，显示sim号信息(分页) -->
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.DevicePo" parameterType="java.util.HashMap">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.device_id   as "deviceId",
+		       a.device_name as "deviceName",
+		       a.device_desc as "deviceDesc",
+		       a.deduct      as "deduct",
+		       a.device_type as "deviceTypeCode",
+		       a.price       as "price",
+		       a.status      as "status",
+		       b.code_desc   as "deviceTypeDesc",
+		       c.code_desc   as "schemeTypeDesc",
+		       a.scheme_type as "schemeTypeCode"
+		  from T_DEVICE a
+		  left join code_device_type b on a.device_type = b.code_id
+		  left join code_scheme_type c on a.scheme_type = c.code_id  where 1 = 1
+	   <if test="devicePo.deviceName != null and devicePo.deviceName != ''">
+             AND a.device_name like '%${devicePo.deviceName}%'
+       </if>
+        <if test="devicePo.deviceDesc != null and devicePo.deviceDesc != ''">
+             AND a.device_desc like '%${devicePo.deviceDesc}%'
+       </if>
+       <if test="devicePo.deviceTypeCode != null and devicePo.deviceTypeCode != ''" >
+             AND a.device_type = #{devicePo.deviceTypeCode}
+       </if>
+       <if test="devicePo.schemeTypeCode != null and devicePo.schemeTypeCode != ''" >
+             AND a.scheme_type = #{devicePo.schemeTypeCode}
+       </if>
+       <if test="devicePo.deduct != null and devicePo.deduct != ''" >
+             AND a.deduct = #{devicePo.deduct}
+       </if>
+       <if test="devicePo.price != null and devicePo.price != ''" >
+             AND a.price = #{devicePo.price}
+       </if>
+       <if test="devicePo.status != null and devicePo.status != ''" >
+             AND a.status = #{devicePo.status}
+       </if>
+		ORDER BY device_id DESC 
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="com.bdxh.kmsale.bean.code.DevicePo">
+	   select count(*) from T_DEVICE a where 1 = 1
+	   <if test="devicePo.deviceName != null and devicePo.deviceName != ''">
+             AND a.device_name like '%${devicePo.deviceName}%'
+       </if>
+        <if test="devicePo.deviceDesc != null and devicePo.deviceDesc != ''">
+             AND a.device_desc like '%${devicePo.deviceDesc}%'
+       </if>
+       <if test="devicePo.deviceTypeCode != null and devicePo.deviceTypeCode != ''" >
+             AND a.device_type = #{devicePo.deviceTypeCode}
+       </if>
+       <if test="devicePo.schemeTypeCode != null and devicePo.schemeTypeCode != ''" >
+             AND a.scheme_type = #{devicePo.schemeTypeCode}
+       </if>
+       <if test="devicePo.deduct != null and devicePo.deduct != ''" >
+             AND a.deduct = #{devicePo.deduct}
+       </if>
+       <if test="devicePo.price != null and devicePo.price != ''" >
+             AND a.price = #{devicePo.price}
+       </if>
+       <if test="devicePo.status != null and devicePo.status != ''" >
+             AND a.status = #{devicePo.status}
+       </if>
+	</select>
+	
+	<select id="getList" resultType="com.bdxh.kmsale.bean.code.DevicePo" parameterType="com.bdxh.kmsale.bean.code.DevicePo">
+	  select a.device_id   as "deviceId",
+		       a.device_name as "deviceName",
+		       a.device_desc as "deviceDesc",
+		       a.deduct      as "deduct",
+		       a.device_type as "deviceTypeCode",
+		       a.price       as "price",
+		       a.status      as "status",
+		       b.code_desc   as "deviceTypeDesc",
+		       c.code_desc   as "schemeTypeDesc",
+		       a.scheme_type as "schemeTypeCode"
+		  from T_DEVICE a
+		  left join code_device_type b on a.device_type = b.code_id
+		  left join code_scheme_type c on a.scheme_type = c.code_id  where 1 = 1
+	   <if test="devicePo.deviceName != null and devicePo.deviceName != ''">
+             AND a.device_name like '%${devicePo.deviceName}%'
+       </if>
+        <if test="devicePo.deviceDesc != null and devicePo.deviceDesc != ''">
+             AND a.device_desc like '%${devicePo.deviceDesc}%'
+       </if>
+       <if test="devicePo.deviceTypeCode != null and devicePo.deviceTypeCode != ''" >
+             AND a.device_type = #{devicePo.deviceTypeCode}
+       </if>
+       <if test="devicePo.schemeTypeCode != null and devicePo.schemeTypeCode != ''" >
+             AND a.scheme_type = #{devicePo.schemeTypeCode}
+       </if>
+       <if test="devicePo.deduct != null and devicePo.deduct != ''" >
+             AND a.deduct = #{devicePo.deduct}
+       </if>
+       <if test="devicePo.price != null and devicePo.price != ''" >
+             AND a.price = #{devicePo.price}
+       </if>
+       <if test="devicePo.status != null and devicePo.status != ''" >
+             AND a.status = #{devicePo.status}
+       </if>
+		ORDER BY device_id DESC 
+	</select>
+	
+	<select id="getDeviceById" parameterType="java.lang.Integer" resultType="com.bdxh.kmsale.bean.code.DevicePo">
+		select a.device_id as "deviceId",
+		       a.device_name as "deviceName",
+		       a.device_desc as "deviceDesc",
+		       a.deduct as "deduct",
+		       a.device_type as "deviceTypeCode",
+		       a.price as "price",
+		       a.status as "status",
+		       a.scheme_type as "schemeTypeCode"
+		from   T_DEVICE a
+		where  a.device_id = #{deviceId}
+	</select>
+	
+	<insert id="insertDevice" parameterType="com.bdxh.kmsale.bean.code.DevicePo">
+		insert into T_DEVICE a (
+			   a.device_id,
+			   a.device_name,
+			   a.device_desc,
+			   a.deduct,
+			   a.device_type,
+			   a.price,
+			   a.status,
+			   a.scheme_type
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{devicePo.deviceName},
+			   #{devicePo.deviceDesc},
+			   #{devicePo.deduct},
+			   #{devicePo.deviceTypeCode},
+			   #{devicePo.price},
+			   #{devicePo.status},
+			   #{devicePo.schemeTypeCode}
+		)
+	</insert>
+	
+	<update id="updateDevice" parameterType="com.bdxh.kmsale.bean.code.DevicePo">
+		update T_DEVICE a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="devicePo.deviceName != null and devicePo.deviceName !=''">
+                a.device_name = #{devicePo.deviceName},
+            </if>
+            <if test="devicePo.deviceDesc != null and devicePo.deviceDesc !=''">
+                a.device_desc = #{devicePo.deviceDesc},
+            </if>
+            <if test="devicePo.deduct != null and devicePo.deduct !=''">
+                a.deduct = #{devicePo.deduct},
+            </if>
+            <if test="devicePo.deviceTypeCode != null and devicePo.deviceTypeCode !=''">
+                a.device_type = #{devicePo.deviceTypeCode},
+            </if>
+            <if test="devicePo.price != null and devicePo.price !=''">
+                a.price = #{devicePo.price},
+            </if>
+            <if test="devicePo.status != null">
+                a.status = #{devicePo.status},
+            </if>
+             <if test="devicePo.schemeTypeCode != null and devicePo.schemeTypeCode !='' ">
+                a.scheme_type = #{devicePo.schemeTypeCode},
+            </if>
+        </trim>
+		 where  a.device_id = #{devicePo.deviceId}
+	</update>
+	
+	<update id="deleteDevice" parameterType="java.lang.Integer">
+		update T_DEVICE a 
+		set    a.status = 0
+		where  a.device_id = #{deviceId}
+	</update>
+	
+	<select id="getAllDeviceType" resultType="com.bdxh.kmsale.bean.code.DeviceTypePo">
+		select t.code_id as "codeId",
+		       t.code_desc as "codeDesc"
+		from   code_device_type t
+		where  t.status = 1
+		order  by t.ord
+	</select>
+	
+	<select id="getAllSchemeType" resultType="com.bdxh.kmsale.bean.code.SchemeTypePo">
+		select t.code_id as "codeId",
+		       t.code_desc as "codeDesc"
+		from   code_scheme_type t
+		where  t.status = 1
+		order  by t.ord
+	</select>
+	
+</mapper>

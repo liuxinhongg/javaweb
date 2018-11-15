@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.PositionConditionMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.PositionConditionPo" parameterType="java.util.Map">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.CONDITION_ID   as "conditionId",
+		       a.CONDITION_NAME as "conditionName",
+		       a.CONDITION_X    as "conditionX",
+		       a.CONDITION_Y    as "conditionY",
+		       a.CONDITION_ORD  as "conditionOrd",
+		       a.CONDITION_DATE as "conditionDate",
+		       a.OPER_ID    as "operId",
+		       a.STATUS    as "status",
+		       a.CONDITION_DESC    as "conditionDesc",
+		       a.CONDITION_Type    as "conditionType"
+		  from T_POSITION_CONDITION A 
+		  where a.CONDITION_Type = #{conditionType}
+		ORDER BY CONDITION_ORD  
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="java.lang.Integer">
+	   select count(*) from T_POSITION_CONDITION where CONDITION_Type = #{conditionType}  
+	</select>
+	
+	<select id="getPositionConditionPoById" parameterType="java.lang.Integer" resultType="com.bdxh.kmsale.bean.code.PositionConditionPo">
+		 select a.CONDITION_ID   as "conditionId",
+		       a.CONDITION_NAME as "conditionName",
+		       a.CONDITION_X    as "conditionX",
+		       a.CONDITION_Y    as "conditionY",
+		       a.CONDITION_ORD  as "conditionOrd",
+		       a.CONDITION_DATE as "conditionDate",
+		       a.OPER_ID    as "operId",
+		       a.STATUS    as "status",
+		       a.CONDITION_DESC    as "conditionDesc",
+		       a.CONDITION_Type    as "conditionType"
+		  from T_POSITION_CONDITION A 
+		where  a.CONDITION_ID = #{conditionId}
+	</select>
+	
+	<insert id="insertPositionConditionPo" parameterType="com.bdxh.kmsale.bean.code.PositionConditionPo">
+		insert into T_POSITION_CONDITION a (
+		       a.CONDITION_ID,
+			   a.CONDITION_NAME,
+			   a.CONDITION_X,
+			   a.CONDITION_Y,
+			   a.CONDITION_ORD,
+			   a.CONDITION_DATE,
+			   a.OPER_ID,
+			   a.STATUS,
+			   a.CONDITION_DESC,
+			   a.CONDITION_Type
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{positionConditionPo.conditionName},
+			   #{positionConditionPo.conditionX},
+			   #{positionConditionPo.conditionY},
+			   #{positionConditionPo.conditionOrd},
+			   SYSDATE,
+			   #{positionConditionPo.operId},
+			   #{positionConditionPo.status},
+			   #{positionConditionPo.conditionDesc},
+			   #{positionConditionPo.conditionType}
+		)
+	</insert>
+	
+	<update id="updatePositionConditionPo" parameterType="com.bdxh.kmsale.bean.code.PositionConditionPo">
+		update T_POSITION_CONDITION a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="positionConditionPo.conditionName != null and positionConditionPo.conditionName !=''">
+                a.CONDITION_NAME = #{positionConditionPo.conditionName},
+            </if>
+            <if test="positionConditionPo.conditionX != null and positionConditionPo.conditionX !=''">
+                a.CONDITION_X = #{positionConditionPo.conditionX},
+            </if>
+            <if test="positionConditionPo.conditionY != null and positionConditionPo.conditionY !=''">
+                a.CONDITION_Y = #{positionConditionPo.conditionY},
+            </if>
+             <if test="positionConditionPo.conditionDesc != null and positionConditionPo.conditionDesc !=''">
+                a.CONDITION_DESC = #{positionConditionPo.conditionDesc},
+            </if>
+             <if test="positionConditionPo.conditionOrd != null">
+                a.CONDITION_ORD = #{positionConditionPo.conditionOrd},
+            </if>
+            <if test="positionConditionPo.status != null">
+                a.STATUS = #{positionConditionPo.status},
+            </if>
+            <if test="positionConditionPo.conditionDate != null">
+                a.CONDITION_DATE = #{positionConditionPo.conditionDate},
+            </if>
+        </trim>
+		 where  a.CONDITION_ID = #{positionConditionPo.conditionId}
+	</update>
+	
+	<update id="deletePositionConditionPo" parameterType="java.lang.Integer">
+		update T_POSITION_CONDITION a  set a.status = 0 where  a.CONDITION_ID = #{conditionId}
+	</update>
+	
+</mapper>

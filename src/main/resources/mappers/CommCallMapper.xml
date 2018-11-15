@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.CommCallMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.CommCallPo" parameterType="com.bdxh.kmsale.domain.Paging">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.code_id   as "codeId",
+		       a.code_desc as "codeDesc",
+		       a.status    as "status",
+		       a.ord    as "ord",
+		       a.CREATE_DATE  as "createDate",
+		       a.oper_id as "operId",
+		       a.firstY_rate    as "firstYRate",
+		       a.secondY_rate    as "secondYRate",
+		       a.comm_min    as "commMin",
+		       a.comm_max    as "commMax"
+		  from CODE_COMM_CALL A 
+		ORDER BY ord   
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="java.lang.Integer">
+	   select count(*) from CODE_COMM_CALL 
+	</select>
+	
+	<select id="getCommCallPoById" parameterType="java.lang.String" resultType="com.bdxh.kmsale.bean.code.CommCallPo">
+		 select a.code_id   as "codeId",
+		       a.code_desc as "codeDesc",
+		       a.status    as "status",
+		       a.ord    as "ord",
+		       a.CREATE_DATE  as "createDate",
+		       a.oper_id as "operId",
+		       a.firstY_rate    as "firstYRate",
+		       a.secondY_rate    as "secondYRate",
+		       a.comm_min    as "commMin",
+		       a.comm_max    as "commMax"
+		  from CODE_COMM_CALL A   
+		where  a.code_id = #{codeId}
+	</select>
+	
+	<insert id="insertCommCallPo" parameterType="com.bdxh.kmsale.bean.code.CommCallPo">
+		insert into CODE_COMM_CALL a (
+		       a.code_id,
+			   a.code_desc,
+			   a.status,
+			   a.ord,
+			   a.CREATE_DATE,
+			   a.oper_id,
+			   a.firstY_rate,
+			   a.secondY_rate,
+			   a.comm_min,
+			   a.comm_max
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{commCallPo.codeDesc},
+			   #{commCallPo.status},
+			   #{commCallPo.ord},
+			   SYSDATE,
+			   #{commCallPo.operId},
+			   #{commCallPo.firstYRate},
+			   #{commCallPo.secondYRate},
+			   #{commCallPo.commMin},
+			   #{commCallPo.commMax}
+		)
+	</insert>
+	
+	<update id="updateCommCallPo" parameterType="com.bdxh.kmsale.bean.code.CommCallPo">
+		update CODE_COMM_CALL a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="commCallPo.codeDesc != null and commCallPo.codeDesc !=''">
+                a.code_desc = #{commCallPo.codeDesc},
+            </if>
+            <if test="commCallPo.status != null">
+                a.status = #{commCallPo.status},
+            </if>
+            <if test="commCallPo.ord != null">
+                a.ord = #{commCallPo.ord},
+            </if>
+             <if test="commCallPo.createDate != null">
+                a.CREATE_DATE = #{commCallPo.createDate},
+            </if>
+             <if test="commCallPo.operId != null and commCallPo.operId !='' ">
+                a.oper_id = #{commCallPo.operId},
+            </if>
+            <if test="commCallPo.firstYRate != null">
+                a.firstY_rate = #{commCallPo.firstYRate},
+            </if>
+            <if test="commCallPo.secondYRate != null">
+                a.secondY_rate = #{commCallPo.secondYRate},
+            </if>
+             <if test="commCallPo.commMin != null">
+                a.comm_min = #{commCallPo.commMin},
+            </if>
+            <if test="commCallPo.commMax != null">
+                a.comm_max = #{commCallPo.commMax},
+            </if>
+        </trim>
+		 where  a.code_id = #{commCallPo.codeId}
+	</update>
+	
+	<update id="deleteCommCallPo" parameterType="java.lang.String">
+		update CODE_COMM_CALL a set a.status = 0 where  a.code_id = #{codeId}
+	</update>
+	
+</mapper>

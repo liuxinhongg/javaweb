@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.BranchMapper">
+
+    <select id="getAllBrachPo" resultType="com.bdxh.kmsale.bean.org.BranchPo">
+       SELECT A.Id AS "id",
+       A.Branch_Name AS "branchName",
+       A.Up_Id AS "upId",
+       A.Lvl AS "lvl",
+       A.Status AS "status",
+       A.branch_city AS "branchCity"
+       FROM T_Branch A
+      WHERE  A.Status = 1 ORDER BY A.LVL,A.CREATE_DATE
+    </select>
+    
+    <select id="getPage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.BranchPo">
+    
+    SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(SELECT A.Id AS "id",
+       A.Branch_Name AS "branchName",
+       A.Up_Id AS "upId",
+       A.Branch_Type AS "branchTypeCode",
+       A.Lvl AS "lvl",
+       D.Agent_Name AS "agentName",
+       D.NO_ID AS "noId"
+  FROM (SELECT *
+          FROM T_Branch
+         WHERE Branch_Type = 2
+         START WITH Id = #{branchPo.upId}
+        CONNECT BY PRIOR Id = Up_Id) a,
+       (SELECT A.*, Agent_Name||'-'||C.BRANCH_NAME Agent_Name
+          FROM T_Manager_Log a, T_Agent b,t_branch c
+         WHERE Effect_Month = To_Char(SYSDATE, 'YYYYMM')
+           AND A.Status = 1
+           AND A.No_Id = B.No_Id
+           AND B.Status = 1
+           AND B.BRANCH_ID=C.ID) d
+ WHERE A.Status = 1
+   AND A.Id = D.Branch_Id(+)
+    ORDER BY A.LVL,A.CREATE_DATE ) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+            <if test="branchPo.branchName != null and branchPo.branchName != ''">
+                AND table_alias."branchName" like '%${branchPo.branchName}%'
+            </if>
+            <if test="branchPo.agentName != null and branchPo.agentName != ''">
+                AND table_alias."agentName" like '%${branchPo.agentName}%'
+            </if>
+             <if test="branchPo.noId != null and branchPo.noId != ''">
+                AND table_alias."noId" like '%${branchPo.noId}%'
+            </if>
+    </select>
+    
+    <select id="getCount" parameterType="com.bdxh.kmsale.bean.org.BranchPo" resultType="java.lang.Integer">
+        SELECT count(*) FROM (SELECT *
+          FROM T_Branch
+         WHERE Branch_Type = 2
+         START WITH Id = #{branchPo.upId}
+        CONNECT BY PRIOR Id = Up_Id) a,
+       (SELECT A.*, Agent_Name||'-'||C.BRANCH_NAME Agent_Name
+          FROM T_Manager_Log a, T_Agent b,t_branch c
+         WHERE Effect_Month = To_Char(SYSDATE, 'YYYYMM')
+           AND A.Status = 1
+           AND A.No_Id = B.No_Id
+           AND B.Status = 1
+           AND B.BRANCH_ID=C.ID) d
+ WHERE A.Status = 1
+   AND A.Id = D.Branch_Id(+)
+            <if test="branchPo.branchName != null and branchPo.branchName != ''">
+                AND A.BRANCH_NAME like '%${branchPo.branchName}%'
+            </if>
+            <if test="branchPo.agentName != null and branchPo.agentName != ''">
+                AND D.Agent_Name like '%${branchPo.agentName}%'
+            </if>
+             <if test="branchPo.noId != null and branchPo.noId != ''">
+                AND D.NO_ID like '%${branchPo.noId}%'
+            </if>
+    </select>
+    
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.bdxh.kmsale.bean.org.BranchPo">
+        SELECT a.Id AS "id",
+	       a.Branch_Name AS "branchName",
+	       a.Up_Id AS "upId",
+	       d.branch_name as "upName",
+	       a.Branch_Type AS "branchTypeCode",
+	       B.Code_Desc AS "branchTypeDesc",
+	       a.Create_Date AS "createDate",
+	       a.Lvl AS "lvl",
+	       A.Status AS "status",
+	       Decode(A.Status, 1, '有效', '无效') AS "statusDesc",
+	       A.branch_city AS "branchCity",
+	       c.no_id as "noId",
+	       c.agent_name as "agentName",
+	       c.effect_month "effectMonth"
+	  FROM T_Branch a,
+	       Code_Branch_Type b,
+	       (select t.*, g.agent_name
+	          from T_MANAGER_LOG t, t_agent g
+	         where t.effect_month = To_Char(SYSDATE, 'YYYYMM')
+	           and t.status = 1
+	           and t.no_id = g.no_id) c,
+	       T_branch d
+	 WHERE A.Branch_Type = B.Code_Id(+)
+	   and a.id = c.branch_id(+)
+	   and a.up_id = d.id(+)
+	   and a.id = #{value}
+	 order by a.Lvl, a.id
+	 
+    </select>
+    
+     <select id="getBranchList" parameterType="com.bdxh.kmsale.bean.org.BranchPo" resultType="com.bdxh.kmsale.bean.org.BranchPo">
+       SELECT A.Id AS "id",
+       A.Branch_Name AS "branchName",
+       A.Up_Id AS "upId",
+       A.Lvl AS "lvl",
+       A.Status AS "status"
+       FROM T_Branch A    
+          <where>
+            1=1
+            <if test="branchPo.branchName != null and branchPo.branchName !=''">
+                AND A.Branch_Name like CONCAT('%',<![CDATA[#{branchPo.branchName}]]>,'%')
+            </if>
+            <if test="branchPo.status !=null">
+                AND A.status = #{branchPo.status}
+            </if>
+            <if test="branchPo.lvl != null and branchPo.lvl !=''">
+                AND A.Lvl = #{branchPo.lvl}
+            </if>
+        </where>
+      
+       ORDER BY A.LVL,A.CREATE_DATE
+    </select>
+    
+    <insert id="saveBranchPo" parameterType="com.bdxh.kmsale.bean.org.BranchPo">
+        insert into T_BRANCH (
+			Id,
+       		Branch_Name,
+       		Up_Id,
+       		Branch_Type,
+       		Create_Date,
+       		Lvl,
+       		branch_city,
+       		Status
+       	)
+		values(
+			#{branchPo.id},
+			#{branchPo.branchName},
+			#{branchPo.upId},
+			#{branchPo.branchTypeCode},
+			sysdate,
+			#{branchPo.lvl},
+			#{branchPo.branchCity},
+			#{branchPo.status}
+		)
+    </insert>
+    
+    <update id="updateBranchPo" parameterType="com.bdxh.kmsale.bean.org.BranchPo">
+        UPDATE T_BRANCH a 
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="branchPo.branchName != null and branchPo.branchName !=''">
+                a.branch_name = #{branchPo.branchName},
+            </if>
+            <if test="branchPo.branchTypeCode != null and branchPo.branchTypeCode !='' ">
+               a.branch_Type = #{branchPo.branchTypeCode},
+            </if>
+            <if test="branchPo.status !=null">
+                a.status = #{branchPo.status},
+            </if>
+            <if test="branchPo.branchCity !=null">
+                a.branch_city = #{branchPo.branchCity},
+            </if>
+            <if test="branchPo.lvl != null and branchPo.lvl !=''">
+                a.lvl = #{branchPo.lvl},
+            </if>
+            <if test="branchPo.upId != null">
+                a.up_Id = #{branchPo.upId}
+            </if>
+        </trim>
+        WHERE a.id = #{branchPo.id}
+    </update>
+    
+    <select id="assumeManager"  parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE">
+          {#{result,mode=OUT,jdbcType=DECIMAL} = call F_Update_Manager(
+               #{noId, mode=IN},
+               #{branchId, mode=IN},
+               #{operId, mode=IN},
+               #{effectMonth, mode=IN}
+              )
+          }
+    </select>
+    
+    <select id="deleteBranch" parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE">
+        
+         {#{result,mode=OUT,jdbcType=DECIMAL} = call f_del_branch(
+               #{branchId, mode=IN}
+              )
+         }
+         
+    </select>
+    
+    <select id="isHasBranchNode" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+          select count(*) as "branchCount"
+		  from   t_branch a
+		  where  a.Up_Id = #{branchId} and  a.branch_type = 2
+    </select>
+    
+    <update id="delOrg" parameterType="java.lang.Integer">
+         UPDATE T_BRANCH a set a.status = 0  WHERE a.id = #{branchId} 
+    </update>
+    
+    <select id="getSamplePage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.BranchPo">
+    
+    SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(SELECT A.Id AS "id", A.Branch_Name AS "branchName"  FROM T_Branch A WHERE A.Status = 1 ORDER BY A.CREATE_DATE ) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+            <if test="branchName != null and branchName != ''">
+                AND table_alias."branchName" like '%${branchName}%'
+            </if>
+           
+    </select>
+    
+    <select id="getSampleCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT count(*) FROM T_Branch A WHERE A.Status = 1 
+            <if test="branchName != null and branchName != ''">
+                AND A.BRANCH_NAME like '%${branchName}%'
+            </if>
+            
+    </select>
+    
+</mapper>

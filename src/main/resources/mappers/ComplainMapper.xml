@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.oper.ComplainMapper">
+
+	<!-- 模糊查询数量不分页 -->
+	<select id="selectComplainCount" resultType="Integer" parameterType="com.bdxh.kmsale.bean.oper.Complain">
+		select count(*)
+		from
+		T_COMPLAIN A,
+		T_SALE B,
+		T_operator C,
+		(Select
+		A1.operator_id ,D1.* From T_COMPLAIN A1, T_COMPLAIN_RECORD D1
+		Where
+		A1.COMPLAIN_ID=D1.COMPLAIN_ID (+) AND D1.PROCESSING_ROLE=0) D,
+		(Select
+		A1.no_id,
+		A2.*,A3.AGENT_NAME,A4.BRANCH_NAME
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD A2,
+		T_AGENT A3,
+		T_BRANCH A4
+		Where
+		A1.COMPLAIN_ID=A2.COMPLAIN_ID
+		AND A2.PROCESSING_ROLE=2
+		AND
+		A1.NO_ID=A3.NO_ID(+)
+		AND A3.BRANCH_ID=A4.ID(+)) E,
+
+		(SELECT F2.*,F1.*
+		FROM
+		(Select A1.branch_id,
+		E1.*
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD E1
+		Where
+		A1.COMPLAIN_ID=E1.COMPLAIN_ID
+		AND E1.PROCESSING_ROLE=2)F1,
+		(select
+		A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME
+		from
+		T_MANAGER_LOG A11,
+		T_AGENT A12,
+		T_BRANCH A13
+		WHERE A11.NO_ID=A12.NO_ID(+)
+		AND A11.BRANCH_ID=A13.ID(+))F2
+		WHERE
+		F1.branch_id= F2.BRANCH_ID) F ,
+		
+		(SELECT F2.*,F1.*
+    	FROM
+    	(Select A1.oper_org_id,
+    	E1.*
+    	from T_COMPLAIN A1,
+    	T_COMPLAIN_RECORD E1
+    	Where
+    	A1.COMPLAIN_ID=E1.COMPLAIN_ID
+    	AND
+   	 	E1.PROCESSING_ROLE=3)F1,
+   	 	(select
+   	 	A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME,A13.BRANCH_CITY from
+   	 	T_MANAGER_LOG A11,
+    	T_AGENT A12,
+    	T_BRANCH A13
+    	WHERE A11.NO_ID=A12.NO_ID(+)
+    	AND A11.BRANCH_ID=A13.ID(+))F2
+        WHERE
+		F1.oper_org_id= F2.BRANCH_ID)G
+		where
+		A.sale_id=B.sale_id(+)
+		AND A.operator_id=C.operator_id(+) 
+		 <if test="complain.svcNumber!=null">
+			and A.svc_number like '%${complain.svcNumber}%'
+		</if>
+		 <if test="complain.branchManagerName!=null">
+			and F.agent_name like '%${complain.branchManagerName}%' or F.PROCESSING_id like '%${complain.branchManagerName}%'
+		</if>
+		<if test="complain.agentName!=null">
+			and C.operator_name like '%${complain.agentName}%' or C.operator_id like '%${complain.agentName}%'
+		</if>
+		<if test="complain.operatorName!=null">
+			and E.agent_name like '%${complain.operatorName}%' or E.no_id like '%${complain.operatorName}%'
+		</if>
+		 <if test="complain.saleDateStart!=null">
+			and to_char(A.complain_date,'YYYY-MM-DD') &gt;= #{complain.saleDateStart}
+		</if>
+		<if test="complain.saleDateEnd!=null">
+			and to_char(A.complain_date,'YYYY-MM-DD') &lt;= #{complain.saleDateEnd}
+		</if>
+		<if test="complain.status!=null">
+			and A.status= #{complain.status}
+		</if>
+		<if test="complain.endRecord!=null">
+			and A.end_record= #{complain.endRecord}
+		</if>
+		<if test="complain.isOver!=null">
+			and A.is_over= #{complain.isOver}
+		</if>
+		<if test="complain.branchCity !=null">
+			and G.branch_city = #{complain.branchCity}
+		</if>
+	 <if test="complain.operOrgId != null">
+       <choose>
+          <when test="complain.branchId != null">
+            and A.branch_id=#{complain.branchId}
+          </when>
+         <otherwise>
+          and A.branch_id=#{complain.operOrgId}
+         </otherwise>
+        </choose>
+        </if>
+	   <if test="complain.deviceId!=null">
+       <choose>
+          <when test="complain.deviceId == 0">
+            and A.device_id=0 
+          </when>
+          <otherwise>
+            and A.device_id&lt;&gt;0
+          </otherwise>
+        </choose>
+        </if>
+	</select>
+
+	<select id="selectComplainByCondition" resultType="com.bdxh.kmsale.bean.oper.Complain"
+		parameterType="java.util.HashMap">
+		SELECT * FROM (SELECT rownum r,H.* FROM(select
+		A.complain_id AS "complainId",
+		A.complain_date AS "complainDate",
+		A.complain_name AS "complainName",
+		B.svc_number AS "svcNumber",
+		B.sale_date AS "saleDate",
+		B.product_id AS "productId",
+		B.device_id AS "deviceId",
+		A.memo AS "memo",
+		A.status AS "status",
+		A.oper_org_id "operOrgId",
+		A.branch_id "branchId",
+		C.operator_name AS "operatorName",
+		C.operator_id AS "operatorId",
+		D.status AS "operatorStatus",
+		D.record AS "operatorRecord",
+		E.no_Id AS "noId",
+		E.agent_name AS "agentName",
+		E.branch_name AS "branchName",
+		E.status AS "agentStatus",
+		E.record AS "agentRecord",
+		E.CREATE_DATE AS "agentDate",
+		F.agent_name AS "branchManagerName",
+		F.PROCESSING_id AS "branchManagerId",
+		F.status AS "branchStatus",
+		F.record AS "branchRecord",
+		F.CREATE_DATE AS "branchDate",
+		G.agent_name AS "operOrgName",
+		G.branch_name AS "operOrgManagerName",
+		G.NO_ID AS "operOrgManagerId",
+		G.status AS "operOrgStatus",
+		G.record AS "operOrgRecord",
+		G.CREATE_DATE AS "operOrgDate",
+		A.end_status AS "endStatus",
+		A.end_record AS "endRecord",
+		A.is_over AS "isOver",
+		A.over_date AS "overData",
+		A.oper_id AS "operId",
+		A.oper_date AS "operData",
+		G.branch_city AS "branchCity"
+		from	
+		T_COMPLAIN A,
+		T_SALE B,
+		T_operator C,
+		(Select
+		A1.operator_id ,D1.* From T_COMPLAIN A1, T_COMPLAIN_RECORD D1
+		Where
+		A1.COMPLAIN_ID=D1.COMPLAIN_ID (+) AND D1.PROCESSING_ROLE=0) D,
+		(Select
+		A1.no_id,
+		A2.*,A3.AGENT_NAME,A4.BRANCH_NAME
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD A2,
+		T_AGENT A3,
+		T_BRANCH A4
+		Where
+		A1.COMPLAIN_ID=A2.COMPLAIN_ID
+		AND A2.PROCESSING_ROLE=2
+		AND
+		A1.NO_ID=A3.NO_ID(+)
+		AND A3.BRANCH_ID=A4.ID(+)) E,
+
+		(SELECT F2.*,F1.*
+		FROM
+		(Select A1.branch_id,
+		E1.*
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD E1
+		Where
+		A1.COMPLAIN_ID=E1.COMPLAIN_ID
+		AND E1.PROCESSING_ROLE=2)F1,
+		(select
+		A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME
+		from
+		T_MANAGER_LOG A11,
+		T_AGENT A12,
+		T_BRANCH A13
+		WHERE A11.NO_ID=A12.NO_ID(+)
+		AND A11.BRANCH_ID=A13.ID(+))F2
+		WHERE
+		F1.branch_id= F2.BRANCH_ID) F ,
+		
+		(SELECT F2.*,F1.*
+    	FROM
+    	(Select A1.oper_org_id,
+    	E1.*
+    	from T_COMPLAIN A1,
+    	T_COMPLAIN_RECORD E1
+    	Where
+    	A1.COMPLAIN_ID=E1.COMPLAIN_ID
+    	AND
+   	 	E1.PROCESSING_ROLE=3)F1,
+   	 	(select
+   	 	A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME,A13.BRANCH_CITY from
+   	 	T_MANAGER_LOG A11,
+    	T_AGENT A12,
+    	T_BRANCH A13
+    	WHERE A11.NO_ID=A12.NO_ID(+)
+    	AND A11.BRANCH_ID=A13.ID(+))F2
+        WHERE
+		F1.oper_org_id= F2.BRANCH_ID)G
+		where
+		A.sale_id=B.sale_id(+)
+		AND A.operator_id=C.operator_id(+) 
+		 <if test="complain.svcNumber!=null">
+			and A.svc_number like '%${complain.svcNumber}%'
+		</if>
+		 <if test="complain.branchManagerName!=null">
+			and F.agent_name like '%${complain.branchManagerName}%' or F.PROCESSING_id like '%${complain.branchManagerName}%'
+		</if>
+		<if test="complain.agentName!=null">
+			and C.operator_name like '%${complain.agentName}%' or C.operator_id like '%${complain.agentName}%'
+		</if>
+		<if test="complain.operatorName!=null">
+			and E.agent_name like '%${complain.operatorName}%' or E.no_id like '%${complain.operatorName}%'
+		</if>
+		 <if test="complain.saleDateStart!=null">
+			and to_char(A.complain_date,'YYYY-MM-DD') &gt;= #{complain.saleDateStart}
+		</if>
+		<if test="complain.saleDateEnd!=null">
+			and to_char(A.complain_date,'YYYY-MM-DD') &lt;= #{complain.saleDateEnd}
+		</if>
+		<if test="complain.status!=null">
+			and A.status= #{complain.status}
+		</if>
+		<if test="complain.endRecord!=null">
+			and A.end_record= #{complain.endRecord}
+		</if>
+		<if test="complain.isOver!=null">
+			and A.is_over= #{complain.isOver}
+		</if>
+		<if test="complain.branchCity !=null">
+			and G.branch_city = #{complain.branchCity}
+		</if>
+	 <if test="complain.operOrgId != null">
+       <choose>
+          <when test="complain.branchId != null">
+            and A.branch_id=#{complain.branchId}
+          </when>
+         <otherwise>
+          and A.branch_id=#{complain.operOrgId}
+         </otherwise>
+        </choose>
+        </if>
+	   <if test="complain.deviceId!=null">
+       <choose>
+          <when test="complain.deviceId == 0">
+            and A.device_id=0 
+          </when>
+          <otherwise>
+            and A.device_id&lt;&gt;0
+          </otherwise>
+        </choose>
+        </if>
+		order by
+		A.is_over asc,A.complain_id
+		DESC)H where rownum&lt;= #{paging.endPos} ) where r&gt;#{paging.startPos}
+	</select>
+	
+<!-- 模糊查询不分页(为了导出) -->
+<select id="selectComplainByAll"
+		resultType="com.bdxh.kmsale.bean.oper.Complain"
+		parameterType="com.bdxh.kmsale.bean.oper.Complain">
+		select
+		A.complain_id AS "complainId",
+		A.complain_date AS "complainDate",
+		A.complain_name AS "complainName",
+		B.svc_number AS "svcNumber",
+		B.sale_date AS "saleDate",
+		B.product_id AS "productId",
+		B.device_id AS "deviceId",
+		A.memo AS "memo",
+		A.status AS "status",
+		A.oper_org_id "operOrgId",
+		A.branch_id "branchId",
+		C.operator_name AS "operatorName",
+		C.operator_id AS "operatorId",
+		D.status AS "operatorStatus",
+		D.record AS "operatorRecord",
+		E.no_Id AS "noId",
+		E.agent_name AS "agentName",
+		E.branch_name AS "branchName",
+		E.status AS "agentStatus",
+		E.record AS "agentRecord",
+		E.CREATE_DATE AS "agentDate",
+		F.agent_name AS "branchManagerName",
+		F.PROCESSING_id AS "branchManagerId",
+		F.status AS "branchStatus",
+		F.record AS "branchRecord",
+		F.CREATE_DATE AS "branchDate",
+		G.agent_name AS "operOrgName",
+		G.branch_name AS "operOrgManagerName",
+		G.NO_ID AS "operOrgManagerId",
+		G.status AS "operOrgStatus",
+		G.record AS "operOrgRecord",
+		G.CREATE_DATE AS "operOrgDate",
+		A.end_status AS "endStatus",
+		A.end_record AS "endRecord",
+		A.is_over AS "isOver",
+		A.over_date AS "overData",
+		A.oper_id AS "operId",
+		A.oper_date AS "operData",
+		G.branch_city AS "branchCity"
+		from	
+		T_COMPLAIN A,
+		T_SALE B,
+		T_operator C,
+		(Select
+		A1.operator_id ,D1.* From T_COMPLAIN A1, T_COMPLAIN_RECORD D1
+		Where
+		A1.COMPLAIN_ID=D1.COMPLAIN_ID (+) AND D1.PROCESSING_ROLE=0) D,
+		(Select
+		A1.no_id,
+		A2.*,A3.AGENT_NAME,A4.BRANCH_NAME
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD A2,
+		T_AGENT A3,
+		T_BRANCH A4
+		Where
+		A1.COMPLAIN_ID=A2.COMPLAIN_ID
+		AND A2.PROCESSING_ROLE=2
+		AND
+		A1.NO_ID=A3.NO_ID(+)
+		AND A3.BRANCH_ID=A4.ID(+)) E,
+
+		(SELECT F2.*,F1.*
+		FROM
+		(Select A1.branch_id,
+		E1.*
+		from T_COMPLAIN A1,
+		T_COMPLAIN_RECORD E1
+		Where
+		A1.COMPLAIN_ID=E1.COMPLAIN_ID
+		AND E1.PROCESSING_ROLE=2)F1,
+		(select
+		A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME
+		from
+		T_MANAGER_LOG A11,
+		T_AGENT A12,
+		T_BRANCH A13
+		WHERE A11.NO_ID=A12.NO_ID(+)
+		AND A11.BRANCH_ID=A13.ID(+))F2
+		WHERE
+		F1.branch_id= F2.BRANCH_ID) F ,
+		
+		(SELECT F2.*,F1.*
+    	FROM
+    	(Select A1.oper_org_id,
+    	E1.*
+    	from T_COMPLAIN A1,
+    	T_COMPLAIN_RECORD E1
+    	Where
+    	A1.COMPLAIN_ID=E1.COMPLAIN_ID
+    	AND
+   	 	E1.PROCESSING_ROLE=3)F1,
+   	 	(select
+   	 	A11.BRANCH_ID,A12.AGENT_NAME,A12.NO_ID,A13.BRANCH_NAME,A13.BRANCH_CITY from
+   	 	T_MANAGER_LOG A11,
+    	T_AGENT A12,
+    	T_BRANCH A13
+    	WHERE A11.NO_ID=A12.NO_ID(+)
+    	AND A11.BRANCH_ID=A13.ID(+))F2
+        WHERE
+		F1.oper_org_id= F2.BRANCH_ID)G
+		where
+		A.sale_id=B.sale_id(+)
+		AND A.operator_id=C.operator_id(+) 
+		 <if test="complain.svcNumber!=null">
+			and A.svc_number like '%${complain.svcNumber}%'
+		</if>
+		 <if test="complain.branchManagerName!=null">
+			and F.agent_name like '%${complain.branchManagerName}%' or F.PROCESSING_id like '%${complain.branchManagerName}%'
+		</if>
+		<if test="complain.agentName!=null">
+			and C.operator_name like '%${complain.agentName}%' or C.operator_id like '%${complain.agentName}%'
+		</if>
+		<if test="complain.operatorName!=null">
+			and E.agent_name like '%${complain.operatorName}%' or E.no_id like '%${complain.operatorName}%'
+		</if>
+		 <if test="complain.saleDateStart!=null">
+			and to_char(A.sale_date,'YYYY-MM-DD') &gt;= #{complain.saleDateStart}
+		</if>
+		<if test="complain.saleDateEnd!=null">
+			and to_char(A.sale_date,'YYYY-MM-DD') &lt;= #{complain.saleDateEnd}
+		</if>
+		<if test="complain.status!=null">
+			and A.status= #{complain.status}
+		</if>
+		<if test="complain.endRecord!=null">
+			and A.end_record= #{complain.endRecord}
+		</if>
+		<if test="complain.isOver!=null">
+			and A.is_over= #{complain.isOver}
+		</if>
+		<if test="complain.branchCity !=null">
+			and G.branch_city = #{complain.branchCity}
+		</if>
+	 <if test="complain.operOrgId != null">
+       <choose>
+          <when test="complain.branchId != null">
+            and A.branch_id=#{complain.branchId}
+          </when>
+         <otherwise>
+          and A.branch_id=#{complain.operOrgId}
+         </otherwise>
+        </choose>
+        </if>
+	   <if test="complain.deviceId!=null">
+       <choose>
+          <when test="complain.deviceId == 0">
+            and A.device_id=0 
+          </when>
+          <otherwise>
+            and A.device_id&lt;&gt;0
+          </otherwise>
+        </choose>
+        </if>
+		 order by
+		A.is_over asc,A.complain_id DESC
+	</select>
+
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.PositionRiseConditionMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.PositionRiseConditionPo" parameterType="java.util.Map">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(select a.CONDITION_ID   as "conditionId",
+		       a.POSITION_ID as "positionId",
+		       p.position_name as "positionName",
+		       a.NEED_POSITION_ID    as "needPositionId",
+		       p1.position_name    as "needPositionName",
+		       a.STANDARD_TYPE    as "standardType",
+		       a.HIGH_TYPE  as "highType",
+		       a.HIGH_VALUE_MIN as "highValueMin",
+		       a.HIGH_VALUE_MAX    as "highValueMax",
+		       a.OPER_ID    as "operId",
+		       a.STATUS    as "status",
+		       a.CONDITION_DATE    as "conditionDate",
+		       a.CONDITION_ORD    as "conditionOrd"
+		  from T_POSITION_RISE_CONDITION A 
+		  LEFT JOIN T_POSITION P ON A.POSITION_ID = P.ID  
+		  LEFT JOIN T_POSITION P1 ON A.NEED_POSITION_ID = P1.ID 
+		ORDER BY CONDITION_ORD  
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="java.lang.Integer">
+	   select count(*) from T_POSITION_RISE_CONDITION 
+	</select>
+	
+	<select id="getPositionRiseConditionPoById" parameterType="java.lang.Integer" resultType="com.bdxh.kmsale.bean.code.PositionRiseConditionPo">
+		select a.CONDITION_ID   as "conditionId",
+		       a.POSITION_ID as "positionId",
+		       p.position_name as "positionName",
+		       a.NEED_POSITION_ID    as "needPositionId",
+		       p1.position_name    as "needPositionName",
+		       a.STANDARD_TYPE    as "standardType",
+		       a.HIGH_TYPE  as "highType",
+		       a.HIGH_VALUE_MIN as "highValueMin",
+		       a.HIGH_VALUE_MAX    as "highValueMax",
+		       a.OPER_ID    as "operId",
+		       a.STATUS    as "status",
+		       a.CONDITION_DATE    as "conditionDate",
+		       a.CONDITION_ORD    as "conditionOrd"
+		  from T_POSITION_RISE_CONDITION A 
+		  LEFT JOIN T_POSITION P ON A.POSITION_ID = P.ID  
+		  LEFT JOIN T_POSITION P1 ON A.NEED_POSITION_ID = P1.ID 
+		where  a.CONDITION_ID = #{conditionId}
+	</select>
+	
+	<insert id="insertPositionRiseConditionPo" parameterType="com.bdxh.kmsale.bean.code.PositionRiseConditionPo">
+		insert into T_POSITION_RISE_CONDITION a (
+		       a.CONDITION_ID,
+			   a.POSITION_ID,
+			   a.NEED_POSITION_ID,
+			   a.STANDARD_TYPE,
+			   a.HIGH_TYPE,
+			   a.HIGH_VALUE_MIN,
+			   a.HIGH_VALUE_MAX,
+			   a.OPER_ID,
+			   a.STATUS,
+			   a.CONDITION_ORD,
+			   a.CONDITION_DATE
+		)
+		values(
+			   seq_device_ID.nextval,
+			   #{positionRiseConditionPo.positionId},
+			   #{positionRiseConditionPo.needPositionId},
+			   #{positionRiseConditionPo.standardType},
+			   #{positionRiseConditionPo.highType},
+			   #{positionRiseConditionPo.highValueMin},
+			   #{positionRiseConditionPo.highValueMax},
+			   #{positionRiseConditionPo.operId},
+			   #{positionRiseConditionPo.status},
+			   #{positionRiseConditionPo.conditionOrd},
+			    SYSDATE
+		)
+	</insert>
+	
+	<update id="updatePositionRiseConditionPo" parameterType="com.bdxh.kmsale.bean.code.PositionRiseConditionPo">
+		update T_POSITION_RISE_CONDITION a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="positionRiseConditionPo.positionId != null">
+                a.POSITION_ID = #{positionRiseConditionPo.positionId},
+            </if>
+            <if test="positionRiseConditionPo.needPositionId != null">
+                a.NEED_POSITION_ID = #{positionRiseConditionPo.needPositionId},
+            </if>
+            <if test="positionRiseConditionPo.standardType != null and positionRiseConditionPo.standardType !=''">
+                a.STANDARD_TYPE = #{positionRiseConditionPo.standardType},
+            </if>
+             <if test="positionRiseConditionPo.highType != null and positionRiseConditionPo.highType !=''">
+                a.HIGH_TYPE = #{positionRiseConditionPo.highType},
+            </if>
+             <if test="positionRiseConditionPo.highValueMin != null">
+                a.HIGH_VALUE_MIN = #{positionRiseConditionPo.highValueMin},
+            </if>
+            <if test="positionRiseConditionPo.highValueMax != null">
+                a.HIGH_VALUE_MAX = #{positionRiseConditionPo.highValueMax},
+            </if>
+            <if test="positionRiseConditionPo.status != null">
+                a.STATUS = #{positionRiseConditionPo.status},
+            </if>
+            <if test="positionRiseConditionPo.conditionDate != null">
+                a.CONDITION_DATE = #{positionRiseConditionPo.conditionDate},
+            </if>
+        </trim>
+		 where  a.CONDITION_ID = #{positionRiseConditionPo.conditionId}
+	</update>
+	
+	<update id="deletePositionRiseConditionPo" parameterType="java.lang.Integer">
+		update T_POSITION_RISE_CONDITION a  set a.status = 0 where  a.CONDITION_ID = #{conditionId}
+	</update>
+	
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.system.RoleMapper">
+<!-- 查询角色列表模糊  -->
+	<select id="selectListRole" resultType="com.bdxh.kmsale.bean.system.Role"
+	        parameterType="com.bdxh.kmsale.bean.ConditionResource">
+		select * from (select rownum r, 
+		a.role_id "roleId",
+		a.role_name "roleName",
+		a.memo "memo",
+		a.parent_id "parentId",
+		a.update_user "updateUser",
+		a.update_date "updateDate"
+		from sc_role a where 1=1
+	    <if test="id!=null">
+			and a.role_id like '%${id}%'
+		</if>
+		<if test="name!=null">
+			and a.role_name like '%${name}%'
+	   </if> 
+	       and rownum&lt;= #{endPos} ) where r&gt;= #{startPos}
+	</select>
+	
+    <!-- 条件查询角色数量 -->
+	<select id="selectRoleCountCondition" resultType="java.lang.Integer"
+	        parameterType="com.bdxh.kmsale.bean.ConditionResource">
+		select count(*) from sc_role where 1=1
+		<if test="id!=null">
+			and role_id like '%${id}%'
+		</if>
+		<if test="name!=null">
+			and role_name like '%${name}%'
+		</if>
+	</select>
+   <!-- 查询角色总数 -->
+	<select id="selectRoleCountAll" resultType="java.lang.Integer">
+		select count(*) from sc_role
+	</select>
+	
+	  <!-- 查询所有角色 -->
+	<select id="selectRoleByAll" resultType="com.bdxh.kmsale.bean.system.Role">
+		select role_id "roleId", role_name "roleName", memo "memo",
+		parent_id "parentId",update_user "updateUser",update_date "updateDate" from sc_role order by role_id
+	</select>
+	
+	<!-- 根据ID查询角色 -->
+	<select id="selectRoleById" resultType="com.bdxh.kmsale.bean.system.Role">
+		select role_id "roleId", role_name "roleName", memo "memo",
+		parent_id "parentId",update_user "updateUser",update_date "updateDate" 
+		from sc_role where role_id=#{roleId}
+	</select>
+	
+   <!-- 新增角色 -->
+	<insert id="insertRole" parameterType="com.bdxh.kmsale.bean.system.Role">
+		insert into sc_role (role_id, role_name, memo,parent_id,update_user,update_date)
+		values (#{roleId},#{roleName},#{memo,jdbcType=VARCHAR},#{parentId,jdbcType=VARCHAR},#{updateUser,jdbcType=VARCHAR},sysdate)
+	</insert>
+
+	<!-- 根据Id修改角色 -->
+	<update id="updateRole" parameterType="com.bdxh.kmsale.bean.system.Role">
+		update sc_role set update_date=sysdate
+		    <if test="roleName!=null">
+				,role_name=#{roleName}
+			</if>
+			<if test="memo!=null">
+				,memo=#{memo}
+			</if>
+			<if test="updateUser!=null">
+				,update_user=#{updateUser}
+			</if>
+		where role_id=#{roleId}
+	</update>
+
+	<!-- 删除角色 -->
+	<delete id="deleteRole" parameterType="com.bdxh.kmsale.bean.system.Role" >
+		delete from sc_role where role_id=#{roleId}
+	</delete> 
+	
+</mapper>

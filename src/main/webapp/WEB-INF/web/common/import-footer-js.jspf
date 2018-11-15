@@ -1,0 +1,52 @@
+<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!-- END PAGE LEVEL PLUGINS -->
+<!--[if lt IE 9]>
+<script src="${ctx}/static/assets/plugins/respond.min.js"></script>
+<script src="${ctx}/static/assets/plugins/excanvas.min.js"></script>
+<style type="text/css">
+.page-sidebar-wrapper {
+		position: absolute;
+		left: 220px;
+	}
+.page-sidebar-closed .page-sidebar-wrapper{
+		position: absolute;
+		left: 35px;
+	}
+</style>
+<![endif]-->
+<script src="${ctx}/static/assets/plugins/jquery-migrate-1.2.1.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/jquery-ui/jquery-ui-1.10.3.custom.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap/js/bootstrap.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap-hover-dropdown/twitter-bootstrap-hover-dropdown.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/jquery-slimscroll/jquery.slimscroll.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/jquery.blockui.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/jquery.cokie.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/uniform/jquery.uniform.min.js?t=${versions}" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script type="text/javascript" src="${ctx}/static/assets/plugins/select2/select2.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/data-tables/jquery.dataTables.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/data-tables/DT_bootstrap.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/fuelux/js/tree.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/select2/select2.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/jquery-validation/dist/jquery.validate.min.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/assets/plugins/jquery-validation/localization/messages_zh.js?t=${versions}"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap-touchspin/bootstrap.touchspin.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap-modal/js/bootstrap-modalmanager.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/plugins/bootstrap-modal/js/bootstrap-modal.js?t=${versions}" type="text/javascript"></script>
+<script src="${ctx}/static/assets/scripts/ui-extended-modals.js?t=${versions}"></script>
+
+<!-- END PAGE LEVEL SCRIPTS -->
+<script src="${ctx}/static/assets/scripts/app.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/base.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/form-components.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/change_password.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/typeahead.bundle.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/lr_confirm.js?t=${versions}"></script>
+<script src="${ctx}/static/lirenkj/scripts/ajaxPaginating.js?t=${versions}"></script>
+<script type="text/javascript" src="${ctx}/static/lirenkj/plugins/uploadify/jquery.uploadify.min.js"></script>

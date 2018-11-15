@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.bdxh.kmsale.mapper.system.RolePermissionsMapper">
+
+    <!--根据角色ID删除权限 -->
+	<delete id="deletePermissionsByRoleId">
+		delete from sc_role_permissions where role_id=#{roleId}
+	</delete>
+
+ 	<!-- 根据菜单ID删除权限 -->
+	<delete id="deletePermissionsBymoduleId">
+		delete from sc_role_permissions where module_id=#{moduleId}
+	</delete>
+
+	<!-- 插入数据 -->
+	<insert id="insertPermissions"   parameterType="com.bdxh.kmsale.bean.system.RolePermissions">
+	insert into sc_role_permissions(
+	role_id,module_id,operation_id,
+	auth_read,auth_create,auth_update,
+	auth_delete,update_user,update_date
+	)values(
+	#{roleId},#{moduleId},#{operationId,jdbcType=VARCHAR},
+	#{authRead,jdbcType=VARCHAR},#{authCreate,jdbcType=VARCHAR},
+	#{authUpdate,jdbcType=VARCHAR},#{authDelete,jdbcType=VARCHAR},
+	#{updateUser,jdbcType=VARCHAR},sysdate)
+	</insert>
+
+	<!-- 根据角色ID查询权限集合 -->
+	<select id="selecPermissionsByRoleId" 
+	        parameterType="com.bdxh.kmsale.bean.system.RolePermissions" 
+	        resultType="com.bdxh.kmsale.bean.system.RolePermissions">
+		select
+        role_id "roleId",
+		module_id "moduleId",
+		operation_id "operationId",
+	    auth_read "authRead",
+	    auth_create "authCreate",
+	    auth_update "authUpdate",
+	    auth_delete "authDelete",
+	    update_user "updateUser",
+	    update_date "updateDate"
+        from sc_role_permissions where role_Id=#{roleId}
+    </select>
+
+	<!-- 根据菜单ID查询权限集合 -->
+	<select id="selecPermissionsByModuleId"
+	       parameterType="com.bdxh.kmsale.bean.system.RolePermissions" 
+           resultType="com.bdxh.kmsale.bean.system.RolePermissions">
+		select
+		role_id "roleId",
+		module_id "moduleId",
+		operation_id "operationId",
+	    auth_read "authRead",
+	    auth_create "authCreate",
+	    auth_update "authUpdate",
+	    auth_delete "authDelete",
+	    update_user "updateUser",
+	    update_date "updateDate"
+        from sc_role_permissions where module_id=#{moduleId}
+    </select>
+
+    <!-- 根据菜单ID和角色ID查询权限 -->
+	<select id="selecPermissions" 
+        	parameterType="com.bdxh.kmsale.bean.system.RolePermissions" 
+        	resultType="com.bdxh.kmsale.bean.system.RolePermissions">
+		select 
+		role_id "roleId",
+		module_id "moduleId",
+		operation_id "operationId",
+	    auth_read "authRead",
+	    auth_create "authCreate",
+	    auth_update "authUpdate",
+	    auth_delete "authDelete",
+	    update_user "updateUser",
+	    update_date "updateDate" 
+	    from sc_role_permissions where module_id=#{moduleId} and role_Id=#{roleId}
+    </select>
+
+    <!--  根据菜单ID和角色ID修改权限 -->
+	<update id="updatePermissions" 
+	   parameterType="com.bdxh.kmsale.bean.system.RolePermissions">
+		update sc_role_permissions set update_date=sysdate
+		<if test="operationId!=null">
+				,operation_id=#{operationId}
+			</if>
+			<if test="authRead!=null">
+				,auth_read=#{authRead}
+			</if>
+			<if test="authCreate!=null">
+				,auth_create=#{authCreate}
+			</if>
+			<if test="authUpdate!=null">
+				,auth_update=#{authUpdate}
+			</if>
+			<if test="authDelete!=null">
+				,auth_delete=#{authDelete}
+			</if>
+			<if test="updateUser!=null">
+				,update_user=#{updateUser}
+			</if>
+		 where module_id=#{moduleId} and role_Id=#{roleId}
+    </update> 
+
+ </mapper>

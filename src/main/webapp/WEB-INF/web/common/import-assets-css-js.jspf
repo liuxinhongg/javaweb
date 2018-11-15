@@ -1,0 +1,5 @@
+<!-- BEGIN GLOBAL MANDATORY STYLES -->
+<link rel="stylesheet" href="${ctx}/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet" href="${ctx}/static/css/font_eolqem241z66flxr.css" media="all" />
+<link rel="stylesheet" href="${ctx}/static/css/main.css" media="all" />
+

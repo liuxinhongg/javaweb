@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.RankMapper">
+    
+  <select id="getPage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.RankPo">
+    
+    SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(Select A.NO_ID As "noId",
+			   A.P_NO_ID      As "pNoId",
+			   A.AGENT_NAME   As "agentName",
+			   A.P_AGENT_NAME As "pRankName",
+			   A.BRANCH_ID    As "branchId",
+			   b.branch_name as "branchName",
+			   A.LVL          As "lvl",
+			   A.RANK         As "rank",
+			   A.RANK_NO      As "rankNo",
+			   case when length(RANK_NO)>100 then substr(RANK_NO,1,100)||'......'
+			   else RANK_NO end As "rankStr"
+  			From T_ORG_RANK A,T_branch B
+ 			Where a.branch_id=b.id ) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+           <if test="rankPo.agentName != null and rankPo.agentName != ''">
+                AND table_alias."agentName" like '%${rankPo.agentName}%'
+           </if>
+           <if test="rankPo.noId != null and rankPo.noId != ''">
+                AND table_alias."noId" like '%${rankPo.noId}%'
+           </if>
+           <if test="rankPo.lvl != null">
+                AND table_alias."lvl" = #{rankPo.lvl}
+           </if>
+  </select>
+    
+  <select id="getCount" parameterType="com.bdxh.kmsale.bean.org.RankPo" resultType="java.lang.Long">
+       Select  count(*)	From T_ORG_RANK A,T_branch B Where a.branch_id=b.id 
+        <if test="rankPo.agentName != null and rankPo.agentName != ''">
+                AND A.AGENT_NAME like '%${rankPo.agentName}%'
+        </if>
+        <if test="rankPo.noId != null and rankPo.noId != ''">
+                AND A.NO_ID like '%${rankPo.noId}%'
+        </if>
+        <if test="rankPo.lvl != null">
+                AND A.LVL = #{rankPo.lvl}
+        </if>
+   </select>
+   
+   <select id="getRankPoList" parameterType="com.bdxh.kmsale.bean.org.RankPo" resultType="com.bdxh.kmsale.bean.org.RankPo">
+    
+          Select A.NO_ID As "noId",
+			   A.P_NO_ID      As "pNoId",
+			   A.AGENT_NAME   As "agentName",
+			   A.P_AGENT_NAME As "pRankName",
+			   A.BRANCH_ID    As "branchId",
+			   B.branch_name as "branchName",
+			   A.LVL          As "lvl",
+			   A.RANK         As "rank",
+			   A.RANK_NO      As "rankNo",
+			   case when length(RANK_NO)>100 then substr(RANK_NO,1,100)||'......'
+			   else RANK_NO end As "rankStr"
+  			From T_ORG_RANK A,T_branch B
+ 			Where a.branch_id=b.id 
+         <if test="rankPo.agentName != null and rankPo.agentName != ''">
+                AND A.AGENT_NAME like '%${rankPo.agentName}%'
+        </if>
+        <if test="rankPo.noId != null and rankPo.noId != ''">
+                AND A.NO_ID like '%${rankPo.noId}%'
+        </if>
+        <if test="rankPo.lvl != null">
+                AND A.LVL = #{rankPo.lvl}
+        </if>
+  </select>
+  
+    <select id="refreshRank" parameterType="java.util.Map" resultType="java.lang.String" statementType="CALLABLE">
+        
+        {call P_T_ORG_RANK(#{result,mode=OUT,jdbcType=VARCHAR})}
+         
+    </select>
+
+</mapper>

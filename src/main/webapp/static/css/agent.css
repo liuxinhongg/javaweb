@@ -1,0 +1,48 @@
+.layui-tableview {
+	width: 100%;
+	margin: 10px 0;
+	background-color: #fff
+}
+
+.layui-tableview tr {
+	transition: all .3s;
+	-webkit-transition: all .3s
+}
+
+.layui-tableview thead tr {
+	background-color: #f2f2f2
+}
+
+.layui-tableview th {
+	text-align: left
+}
+
+.layui-tableview td, .layui-tableview th {
+	padding: 9px 15px;
+	min-height: 20px;
+	line-height: 20px;
+	border: 1px solid #e2e2e2;
+	font-size: 14px
+}
+
+.layui-tableview tr:hover, .layui-tableview[lay-even] tr:nth-child(even) {
+	background-color: #f8f8f8
+}
+
+.layui-tableview[lay-skin=line], .layui-tableview[lay-skin=row] {
+	border: 1px solid #e2e2e2
+}
+
+.layui-tableview[lay-skin=line] td, .layui-tableview[lay-skin=line] th {
+	border: none;
+	border-bottom: 1px solid #e2e2e2
+}
+
+.layui-tableview[lay-skin=row] td, .layui-tableview[lay-skin=row] th {
+	border: none;
+	border-right: 1px solid #e2e2e2
+}
+
+.layui-tableview[lay-skin=nob] td, .layui-tableview[lay-skin=nob] th {
+	border: none
+}

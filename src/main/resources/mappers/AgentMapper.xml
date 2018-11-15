@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.AgentMapper">
+    
+    <select id="getSamplePage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.AgentPo">
+    
+    SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(Select A.NO_ID As "noId",
+	       B.BRANCH_NAME     AS "branchName",
+	       A.LVL            As "lvl",
+	       A.TEL             As "tel",
+	       A.AGENT_NAME      As "agentName",
+	       B.Up_Id AS "upBranchId"
+	  From T_AGENT A, T_BRANCH B
+	 Where  A.BRANCH_ID = B.ID(+) and
+	 	   A.STATUS = 1 ORDER BY A.LVL,A.CREATE_DATE ) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+            <if test="agentPo.agentName != null and agentPo.agentName != ''">
+                AND table_alias."agentName" like '%${agentPo.agentName}%'
+            </if>
+             <if test="agentPo.noId != null and agentPo.noId != ''">
+                AND table_alias."noId" like '%${agentPo.noId}%'
+            </if>
+    </select>
+    
+    <select id="getSampleCount" parameterType="com.bdxh.kmsale.bean.org.AgentPo" resultType="java.lang.Long">
+        SELECT count(*) FROM T_AGENT A
+        <where>
+            A.STATUS = 1 
+            <if test="agentPo.agentName != null and agentPo.agentName != ''">
+                AND A.AGENT_NAME like '%${agentPo.agentName}%'
+            </if>
+             <if test="agentPo.noId != null and agentPo.noId != ''">
+                AND A.NO_ID like '%${agentPo.noId}%'
+            </if>
+        </where>
+    </select>
+    
+     <select id="getPage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.AgentPo">
+    
+    SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(Select A.CREATE_DATE     As "createDate",
+	       A.NO_ID           As "noId",
+	       A.P_NO_ID         As "pNoId",
+	       A.join_type       As "joinType",
+	       D.AGENT_NAME      AS "upAgentName",
+	       A.LVL             As "lvl",
+	       A.BRANCH_ID       As "branchId",
+	       C.BRANCH_NAME     AS "branchName",
+	       A.STATUS          As "status",
+	       A.STATUS_DATE     As "statusDate",
+	       A.ID_NUMBER       As "idNumber",
+	       A.AGENT_NAME      As "agentName",
+	       A.ORIGO           As "origo",
+	       A.NATION          As "nation",
+	       A.DOMICILE        As "domicile",
+	       A.BIRTHDAY        As "birthday",
+	       A.ADDRESS         As "address",
+	       A.SEX             As "sex",
+	       A.TEL             As "tel",
+	       A.HEALTHY         As "healthy",
+	       A.EDUCATION       As "education",
+	       A.GRADUATE_SCHOOL As "graduateSchool",
+	       A.GRADUATE_DATE   As "graduateDate",
+	       A.POLITIC         As "politic",
+	       A.BANK            As "bank",
+	       A.BANK_NO         As "bankNo",
+	       A.FAMILY          As "family",
+	       A.EXPERIENCE      As "experience",
+	       A.HOBBY           As "hobby",
+	       A.PHOTO           As "photo",
+	       A.ID_PIC          As "idPic",
+	       A.BALANCE         As "balance",
+	       A.REMARK          As "remark",
+	       D.branch_name as "upBranchName",
+	       D.branch_id as "upBranchId",
+	       A.modify_man	as "modifyMan",
+	       A.modify_time as "modifyTime"
+	       From T_AGENT A,T_BRANCH C,
+		   (Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) D
+	       Where A.BRANCH_ID = C.ID(+) and  A.P_NO_ID = D.NO_ID(+) ) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+            <if test="agentPo.agentName != null and agentPo.agentName != ''">
+                AND table_alias."agentName" like '%${agentPo.agentName}%'
+            </if>
+             <if test="agentPo.noId != null and agentPo.noId != ''">
+                AND table_alias."noId" like '%${agentPo.noId}%'
+            </if>
+            <if test="agentPo.upAgentName != null and agentPo.upAgentName != ''">
+                AND table_alias."upAgentName" like '%${agentPo.upAgentName}%'
+            </if>
+            <if test="agentPo.branchName != null and agentPo.branchName != ''">
+                AND table_alias."branchName" like '%${agentPo.branchName}%'
+            </if>
+            <if test="agentPo.status != null and agentPo.status >=0 ">
+                AND table_alias."status" = #{agentPo.status}
+            </if>
+            <if test="agentPo.joinType != null and agentPo.joinType >=0 ">
+                AND table_alias."joinType" = #{agentPo.joinType}
+            </if>
+            <if test="agentPo.tel != null and agentPo.tel != ''">
+                AND table_alias."tel" like '%${agentPo.tel}%'
+            </if>
+            <if test="agentPo.startTime != null and agentPo.startTime != ''">
+                to_char(table_alias."createDate",'YYYY-MM-DD') &gt;= #{agentPo.startTime}
+            </if>
+            <if test="agentPo.endTime != null and agentPo.endTime != ''">
+                to_char(table_alias."createDate",'YYYY-MM-DD') &lt;= #{agentPo.endTime}
+            </if>
+    </select>
+    
+    <select id="getCount" parameterType="com.bdxh.kmsale.bean.org.AgentPo" resultType="java.lang.Long">
+        SELECT count(*) FROM T_AGENT A,T_BRANCH C,(Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) D
+        <where>
+            A.BRANCH_ID = C.ID(+) and
+	 	    A.P_NO_ID = D.NO_ID(+)
+            <if test="agentPo.agentName != null and agentPo.agentName != ''">
+                AND D.AGENT_NAME like '%${agentPo.agentName}%'
+            </if>
+             <if test="agentPo.noId != null and agentPo.noId != ''">
+                AND A.NO_ID like '%${agentPo.noId}%'
+            </if>
+            <if test="agentPo.upAgentName != null and agentPo.upAgentName != ''">
+                AND D.AGENT_NAME  like '%${agentPo.upAgentName}%'
+            </if>
+            <if test="agentPo.branchName != null and agentPo.branchName != ''">
+                AND C.BRANCH_NAME like '%${agentPo.branchName}%'
+            </if>
+            <if test="agentPo.status != null and agentPo.status >=0 ">
+                AND A.STATUS = #{agentPo.status}
+            </if>
+            <if test="agentPo.joinType != null and agentPo.joinType >=0 ">
+                AND  A.join_type = #{agentPo.joinType}
+            </if>
+            <if test="agentPo.tel != null and agentPo.tel != ''">
+                AND A.TEL like '%${agentPo.tel}%'
+            </if>
+            <if test="agentPo.startTime != null and agentPo.startTime != ''">
+                to_char(A.CREATE_DATE,'YYYY-MM-DD') &gt;= #{agentPo.startTime}
+            </if>
+            <if test="agentPo.endTime != null and agentPo.endTime != ''">
+                to_char(A.CREATE_DATE,'YYYY-MM-DD') &lt;= #{agentPo.endTime}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getAgentById" parameterType="java.lang.String" resultType="com.bdxh.kmsale.bean.org.AgentPo">
+        Select A.CREATE_DATE     As "createDate",
+	       A.NO_ID           As "noId",
+	       A.P_NO_ID         As "pNoId",
+	       C.AGENT_NAME      AS "upAgentName",
+	       A.LVL             As "lvl",
+	       A.BRANCH_ID       As "branchId",
+	       B.BRANCH_NAME     AS "branchName",
+	       A.STATUS          As "status",
+	       A.STATUS_DATE     As "statusDate",
+	       A.ID_NUMBER       As "idNumber",
+	       A.AGENT_NAME      As "agentName",
+	       A.ORIGO           As "origo",
+	       A.NATION          As "nation",
+	       A.DOMICILE        As "domicile",
+	       A.BIRTHDAY        As "birthday",
+	       A.ADDRESS         As "address",
+	       A.SEX             As "sex",
+	       A.TEL             As "tel",
+	       A.HEALTHY         As "healthy",
+	       A.EDUCATION       As "education",
+	       A.GRADUATE_SCHOOL As "graduateSchool",
+	       A.GRADUATE_DATE   As "graduateDate",
+	       A.POLITIC         As "politic",
+	       A.BANK            As "bank",
+	       A.BANK_NO         As "bankNo",
+	       A.FAMILY          As "family",
+	       A.EXPERIENCE      As "experience",
+	       A.HOBBY           As "hobby",
+	       A.PHOTO           As "photo",
+	       A.ID_PIC          As "idPic",
+	       A.BALANCE         As "balance",
+	       A.REMARK          As "remark",
+	       C.branch_name as "upBranchName",
+	       C.branch_id as "upBranchId",
+	       A.NO_TEL as "noTel"
+	  From T_AGENT A,T_BRANCH B,
+			(Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) C
+	 Where A.BRANCH_ID = B.ID(+) and
+	 	   A.P_NO_ID = C.NO_ID(+) and A.NO_ID = #{noId} 
+    </select>
+    
+    <select id="saveDelAgent" parameterType="java.util.Map" resultType="java.math.BigDecimal" statementType="CALLABLE">
+         {#{V_RESULT,mode=OUT,jdbcType=DECIMAL} = call f_del_agent(
+               #{V_NO_ID, mode=IN},
+               #{V_STATUS, mode=IN}
+           )
+         }
+    </select>
+    
+    <select id="getAgentAlertPage" parameterType="java.util.HashMap" resultType="com.bdxh.kmsale.bean.org.AgentPo">
+
+	 SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(SELECT b.up_id as "upBranchId",
+	   a.No_Id as "noId",
+	   a.P_NO_ID as "pNoId",
+       a.Agent_Name as "agentName",
+       b.branch_name as "branchName",
+       D.AGENT_NAME      AS "upAgentName",
+       a.Create_Date as "createDate",
+       a.Tel as "tel",
+       a.Id_Number as "idNumber",
+       b.branch_city AS "branchCity"
+  FROM T_Agent a, T_Branch b,(Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) D
+ WHERE a.branch_id=b.id and A.P_NO_ID = D.NO_ID(+) 
+   and a.No_Id IN
+       (SELECT A.No_Id
+          FROM (SELECT *
+                  FROM T_Agent
+                 WHERE To_Char(Create_Date, 'YYYYMM') &lt;=
+                       To_Char(Add_Months(SYSDATE, -6), 'YYYYMM')
+                   AND Status = 1) a,
+               (SELECT DISTINCT No_Id, Svc_Number
+                  FROM T_Sale
+                 WHERE To_Char(Sale_Date, 'YYYYMM') BETWEEN
+                       To_Char(Add_Months(SYSDATE, -5), 'YYYYMM') AND
+                       To_Char(SYSDATE, 'YYYYMM')) b
+         WHERE A.No_Id = B.No_Id(+)
+         GROUP BY A.No_Id, Lvl
+        HAVING COUNT(DISTINCT B.Svc_Number) = 0) ORDER BY a.no_id DESC) r
+           where ROWNUM &lt;= #{paging.endPos} ) table_alias
+           WHERE table_alias.rowno &gt; #{paging.startPos}
+             
+             <if test="agentPo.upBranchId != null">
+                AND table_alias."upBranchId" = #{agentPo.upBranchId}
+            </if>
+             <if test="agentPo.branchName != null and agentPo.branchName != ''">
+                AND table_alias."branchName" like '%${agentPo.branchName}%'
+            </if>
+             <if test="agentPo.upAgentName != null and agentPo.upAgentName != ''">
+                AND table_alias."upAgentName" like '%${agentPo.upAgentName}%'
+            </if>
+            <if test="agentPo.branchCity != null and agentPo.branchCity != ''">
+                AND table_alias."branchCity" like '%${agentPo.branchCity}%'
+            </if>
+	</select>
+
+     <select id="getAgentAlertCount" parameterType="com.bdxh.kmsale.bean.org.AgentPo" resultType="java.lang.Long">
+       SELECT count(*)  FROM
+        T_Agent a, T_Branch b,(Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) D
+         WHERE a.branch_id=b.id and A.P_NO_ID = D.NO_ID(+) and a.No_Id IN
+       (SELECT A.No_Id
+          FROM (SELECT *
+                  FROM T_Agent
+                 WHERE To_Char(Create_Date, 'YYYYMM') &lt;=
+                       To_Char(Add_Months(SYSDATE, -6), 'YYYYMM')
+                   AND Status = 1) a,
+                  (SELECT DISTINCT No_Id, Svc_Number FROM T_Sale
+                 WHERE To_Char(Sale_Date, 'YYYYMM') BETWEEN
+                       To_Char(Add_Months(SYSDATE, -5), 'YYYYMM') AND
+                       To_Char(SYSDATE, 'YYYYMM')) b
+                 WHERE A.No_Id = B.No_Id(+)   GROUP BY A.No_Id, Lvl
+        HAVING COUNT(DISTINCT B.Svc_Number) = 0) 
+      
+            <if test="agentPo.upBranchId != null">
+                AND b.up_id = #{agentPo.upBranchId}
+            </if>
+            <if test="agentPo.branchName != null and agentPo.branchName != ''">
+                AND b.branch_name like '%${agentPo.branchName}%'
+            </if>
+             <if test="agentPo.upAgentName != null and agentPo.upAgentName != ''">
+                AND D.AGENT_NAME like '%${agentPo.upAgentName}%'
+            </if>
+            <if test="agentPo.branchCity != null and agentPo.branchCity != ''">
+                AND b.branch_city like '%${agentPo.branchCity}%'
+            </if>
+          
+    </select>
+    
+    
+     <select id="getAgentAlertList" parameterType="com.bdxh.kmsale.bean.org.AgentPo" resultType="com.bdxh.kmsale.bean.org.AgentPo">
+
+	   SELECT b.up_id as "upBranchId",
+	      a.No_Id as "noId",
+	      a.P_NO_ID as "pNoId",
+          a.Agent_Name as "agentName",
+          b.branch_name as "branchName",
+          D.AGENT_NAME      AS "upAgentName",
+          a.Create_Date as "createDate",
+          a.Tel as "tel",
+          a.Id_Number as "idNumber",
+          b.branch_city AS "branchCity"
+       FROM T_Agent a, T_Branch b,(Select A1.*,F.branch_name From T_AGENT A1,T_BRANCH F Where A1.Branch_id=F.id(+)) D  
+       WHERE a.branch_id=b.id and A.P_NO_ID = D.NO_ID(+)  
+       and a.No_Id IN
+       (SELECT A.No_Id
+          FROM (SELECT *
+                  FROM T_Agent
+                 WHERE To_Char(Create_Date, 'YYYYMM') &lt;=
+                       To_Char(Add_Months(SYSDATE, -6), 'YYYYMM')
+                   AND Status = 1) a,
+               (SELECT DISTINCT No_Id, Svc_Number
+                  FROM T_Sale
+                 WHERE To_Char(Sale_Date, 'YYYYMM') BETWEEN
+                       To_Char(Add_Months(SYSDATE, -5), 'YYYYMM') AND
+                       To_Char(SYSDATE, 'YYYYMM')) b
+         WHERE A.No_Id = B.No_Id(+)
+         GROUP BY A.No_Id, Lvl
+        HAVING COUNT(DISTINCT B.Svc_Number) = 0)
+        
+         <if test="agentPo.upBranchId != null">
+                AND b.up_id = #{agentPo.upBranchId}
+            </if>
+            <if test="agentPo.branchName != null and agentPo.branchName != ''">
+                AND b.branch_name like '%${agentPo.branchName}%'
+            </if>
+             <if test="agentPo.upAgentName != null and agentPo.upAgentName != ''">
+                AND D.AGENT_NAME like '%${agentPo.upAgentName}%'
+            </if>
+            <if test="agentPo.branchCity != null and agentPo.branchCity != ''">
+                AND b.branch_city like '%${agentPo.branchCity}%'
+            </if>
+        ORDER BY a.no_id DESC
+	</select>
+    
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.comm.CommissionMapper">
+	
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.comm.CommissionPo" parameterType="java.util.HashMap">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(SELECT Acct_Month            AS "acctMonth",
+       Branch_Id             AS "branchId",
+       Branch_Name           AS "branchName",
+       A.No_Id               AS "noId",
+       User_Name             AS "userName",
+       ID_NO                 AS "idNo",
+       nvl(P_No_Id,'空')               AS "pNoId",
+       nvl(P_User_Name,'空')           AS "pUserName",
+       nvl(Lvl,-1)                   AS "lvl",
+       nvl(Tel,'空')                   AS "tel",
+       nvl(Bank_No ,'空')              AS "bankNo",
+       nvl(Personal_Sale_Cnt    ,0) AS "personalSaleCnt",
+       nvl(Personal_Sale_Amount ,0) AS "personalSaleAmount",
+       nvl(All_Sale_Cnt         ,0) AS "allSaleCnt",
+       nvl(All_Sale_Cnt2g       ,0) AS "allSaleCnt2g",
+       nvl(All_Sale_Cnt3g       ,0) AS "allSaleCnt3g",
+       nvl(Comm_Once            ,0) AS "commOnce",
+       nvl(Comm_Once2g          ,0) AS "commOnce2g",
+       nvl(Comm_Once3g          ,0) AS "commOnce3g",
+       nvl(Comm_Once4g,nvl(a.comm_once,0)-nvl(a.comm_once2g,0)-nvl(a.comm_once3g,0) ) AS "commOnce4g",
+       nvl(Card_Deduct          ,0) AS "cardDeduct",
+       nvl(Device_Deduct        ,0) AS "deviceDeduct",
+       nvl(Comm_Call            ,0) AS "commCall",
+       nvl(Comm_Call_Rate       ,0) AS "commCallRate",
+       nvl(Basic_Num            ,0) AS "basicNum",
+       nvl(Basic_Num_2g         ,0) AS "basicNum2g", 
+       nvl(Basic_Num_3g         ,0) AS "basicNum3g", 
+       nvl(Comm_Base            ,0) AS "commBase",
+       nvl(Comm_Base_2g         ,0) AS "commBase2g", 
+       nvl(Comm_Base_3g         ,0) AS "commBase3g", 
+       nvl(Rate_Cnt             ,0) AS "rateCnt",
+       nvl(New_Act_Kpi          ,0) AS "newActKpi",
+       nvl(Direct_Contribution  ,0) AS "directContribution",
+       nvl(Direct_Contribution_all  ,0) AS "directContributionAll", 
+       nvl(Direct_Contribution_3g  ,0) AS "directContribution3g", 
+       nvl(Indirect_Contribution,0) AS "indirectContribution",
+       nvl(Indirect_Contribution_all,0) AS "indirectContributionAll", 
+       nvl(Indirect_Contribution_3g,0) AS "indirectContribution3g", 
+       decode(Manager_Amount_Flag,1,'是','否')   AS "managerAmountFlag",
+       nvl(Comm_Manager         ,0) AS "commManager",
+       Position_Name         AS "positionName",
+       nvl(Comm_Position        ,0) AS "commPosition",
+       nvl(Comm_Contribution    ,0) AS "commContribution",
+       nvl(Comm_Tel_Bill        ,0) AS "commTelBill",
+       nvl(Comm_Tel_Bill_Ext    ,0) AS "commTelBillExt",
+       nvl(COMM_DUTY			,0) AS "commDuty",
+       NO_TEL						AS "noTel",
+       nvl(STATION_NAME ,'--') AS "stationName",
+       nvl(COMM_STATION			,0) AS "commStation",
+       DECODE(AGENT_STATUS, 1, '否', '是')  as "agentStatus",
+       to_char(AGENT_STATUS_DATE,'YYYY-MM-DD') as "agentStatusDate",
+       nvl(COMM_TEL_BILL_EXT_OLD,0) as "commTelBillExtOld"
+       FROM C_Comm_Final a
+       WHERE 1=1
+       <if test="commissionPo.userName != null and commissionPo.userName != ''">
+             AND a.user_Name like '%${commissionPo.userName}%'
+       </if>
+       <if test="commissionPo.noId != null and commissionPo.noId != ''">
+             AND a.No_Id like '%${commissionPo.noId}%'
+       </if>
+       <if test="commissionPo.acctMonth != null and commissionPo.acctMonth != ''">
+             AND a.acct_month = ${commissionPo.acctMonth}
+       </if>
+        <if test="commissionPo.positionId != null">
+             AND a.position_Id = ${commissionPo.positionId}
+       </if>
+        <if test="commissionPo.branchId != null">
+             AND a.Branch_Id = ${commissionPo.branchId}
+       </if>
+       <if test="commissionPo.noIdOrg != null">
+            a.no_id in (SELECT No_Id FROM T_Agent where 1=1 START WITH No_Id = ${commissionPo.noIdOrg} CONNECT BY PRIOR No_Id = P_No_Id)
+       </if>
+       ORDER BY acctMonth DESC 
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="java.lang.Integer">
+	   select count(*) from CODE_COMM_CALL 
+	   WHERE 1=1 
+	    <if test="commissionPo.userName != null and commissionPo.userName != ''">
+             AND a.user_Name like '%${commissionPo.userName}%'
+       </if>
+       <if test="commissionPo.noId != null and commissionPo.noId != ''">
+             AND a.No_Id like '%${commissionPo.noId}%'
+       </if>
+       <if test="commissionPo.acctMonth != null and commissionPo.acctMonth != ''">
+             AND a.acct_month = ${commissionPo.acctMonth}
+       </if>
+        <if test="commissionPo.positionId != null">
+             AND a.position_Id = ${commissionPo.positionId}
+       </if>
+       <if test="commissionPo.branchId != null">
+             AND a.Branch_Id = ${commissionPo.branchId}
+       </if>
+       <if test="commissionPo.noIdOrg != null">
+            a.no_id in (SELECT No_Id FROM T_Agent where 1=1 START WITH No_Id = ${commissionPo.noIdOrg} CONNECT BY PRIOR No_Id = P_No_Id)
+       </if>
+	</select>
+	
+	<select id="getAllCommissionByCondition" parameterType="com.bdxh.kmsale.bean.comm.CommissionPo" resultType="com.bdxh.kmsale.bean.code.CommCallPo">
+		SELECT Acct_Month            AS "acctMonth",
+       Branch_Id             AS "branchId",
+       Branch_Name           AS "branchName",
+       A.No_Id               AS "noId",
+       User_Name             AS "userName",
+       ID_NO                 AS "idNo",
+       nvl(P_No_Id,'空')               AS "pNoId",
+       nvl(P_User_Name,'空')           AS "pUserName",
+       nvl(Lvl,-1)                   AS "lvl",
+       nvl(Tel,'空')                   AS "tel",
+       nvl(Bank_No ,'空')              AS "bankNo",
+       nvl(Personal_Sale_Cnt    ,0) AS "personalSaleCnt",
+       nvl(Personal_Sale_Amount ,0) AS "personalSaleAmount",
+       nvl(All_Sale_Cnt         ,0) AS "allSaleCnt",
+       nvl(All_Sale_Cnt2g       ,0) AS "allSaleCnt2g",
+       nvl(All_Sale_Cnt3g       ,0) AS "allSaleCnt3g",
+       nvl(Comm_Once            ,0) AS "commOnce",
+       nvl(Comm_Once2g          ,0) AS "commOnce2g",
+       nvl(Comm_Once3g          ,0) AS "commOnce3g",
+       nvl(Comm_Once4g,nvl(a.comm_once,0)-nvl(a.comm_once2g,0)-nvl(a.comm_once3g,0) ) AS "commOnce4g",
+       nvl(Card_Deduct          ,0) AS "cardDeduct",
+       nvl(Device_Deduct        ,0) AS "deviceDeduct",
+       nvl(Comm_Call            ,0) AS "commCall",
+       nvl(Comm_Call_Rate       ,0) AS "commCallRate",
+       nvl(Basic_Num            ,0) AS "basicNum",
+       nvl(Basic_Num_2g         ,0) AS "basicNum2g", 
+       nvl(Basic_Num_3g         ,0) AS "basicNum3g", 
+       nvl(Comm_Base            ,0) AS "commBase",
+       nvl(Comm_Base_2g         ,0) AS "commBase2g", 
+       nvl(Comm_Base_3g         ,0) AS "commBase3g", 
+       nvl(Rate_Cnt             ,0) AS "rateCnt",
+       nvl(New_Act_Kpi          ,0) AS "newActKpi",
+       nvl(Direct_Contribution  ,0) AS "directContribution",
+       nvl(Direct_Contribution_all  ,0) AS "directContributionAll", 
+       nvl(Direct_Contribution_3g  ,0) AS "directContribution3g", 
+       nvl(Indirect_Contribution,0) AS "indirectContribution",
+       nvl(Indirect_Contribution_all,0) AS "indirectContributionAll", 
+       nvl(Indirect_Contribution_3g,0) AS "indirectContribution3g", 
+       decode(Manager_Amount_Flag,1,'是','否')   AS "managerAmountFlag",
+       nvl(Comm_Manager         ,0) AS "commManager",
+       Position_Name         AS "positionName",
+       nvl(Comm_Position        ,0) AS "commPosition",
+       nvl(Comm_Contribution    ,0) AS "commContribution",
+       nvl(Comm_Tel_Bill        ,0) AS "commTelBill",
+       nvl(Comm_Tel_Bill_Ext    ,0) AS "commTelBillExt",
+       nvl(COMM_DUTY			,0) AS "commDuty",
+       NO_TEL						AS "noTel",
+       nvl(STATION_NAME ,'--') AS "stationName",
+       nvl(COMM_STATION			,0) AS "commStation",
+       DECODE(AGENT_STATUS, 1, '否', '是')  as "agentStatus",
+       to_char(AGENT_STATUS_DATE,'YYYY-MM-DD') as "agentStatusDate",
+       nvl(COMM_TEL_BILL_EXT_OLD,0) as "commTelBillExtOld"
+  FROM C_Comm_Final a WHERE 1=1
+  
+       <if test="commissionPo.userName != null and commissionPo.userName != ''">
+             AND a.user_Name like '%${commissionPo.userName}%'
+       </if>
+       <if test="commissionPo.noId != null and commissionPo.noId != ''">
+             AND a.No_Id like '%${commissionPo.noId}%'
+       </if>
+       <if test="commissionPo.acctMonth != null and commissionPo.acctMonth != ''">
+             AND a.acct_month = ${commissionPo.acctMonth}
+       </if>
+        <if test="commissionPo.positionId != null">
+             AND a.position_Id = ${commissionPo.positionId}
+       </if>
+       <if test="commissionPo.branchId != null">
+             AND a.Branch_Id = ${commissionPo.branchId}
+       </if>
+       <if test="commissionPo.noIdOrg != null">
+            a.no_id in (SELECT No_Id FROM T_Agent where 1=1 START WITH No_Id = ${commissionPo.noIdOrg} CONNECT BY PRIOR No_Id = P_No_Id)
+       </if>
+  
+	</select>
+	
+</mapper>

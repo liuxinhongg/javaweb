@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.code.ProductMapper">
+	
+	<!-- 多条件查询，显示sim号信息(分页) -->
+	<select id="getPage" resultType="com.bdxh.kmsale.bean.code.ProductPo" parameterType="java.util.HashMap">
+	   SELECT * FROM ( SELECT ROWNUM AS rowno,r.* FROM(Select  PRODUCT_ID as "productId",
+                PRODUCT_NAME as "productName",
+         		PRODUCT_DESC as "productDesc",
+         		PRODUCT_TYPE as "productType",
+         		FOUR as "four",
+         		NONE_FOUR as "noneFour",
+         		ACTION as "action",
+         		IS_VIEW as "isView",
+         		B.CODE_DESC "productTypeDesc",
+         		a.IS_IH as "isIh",
+               a.IS_KH as "isKh" 
+        From 	T_PRODUCT a ,CODE_PRODUCT_TYPE b
+		where  a.PRODUCT_TYPE=b.CODE_ID 
+		   <if test="productPo.productName != null and productPo.productName != ''">
+             AND a.PRODUCT_NAME like '%${productPo.productName}%'
+       </if>
+       <if test="productPo.productType != null and productPo.productType != ''" >
+             AND a.PRODUCT_TYPE = #{productPo.productType}
+       </if>
+       <if test="productPo.isView != null and productPo.isView != ''" >
+             AND a.IS_VIEW = #{productPo.isView}
+       </if>
+       <if test="productPo.isIh != null and productPo.isIh != ''" >
+             AND a.IS_IH = #{productPo.isIh}
+       </if>
+       <if test="productPo.isKh != null and productPo.isKh != ''" >
+             AND a.IS_KH = #{productPo.isKh}
+       </if>
+		ORDER BY PRODUCT_ID DESC 
+		) r  where ROWNUM &lt;= #{paging.endPos}) table_alias
+       WHERE table_alias.rowno &gt; #{paging.startPos}
+       
+	</select>
+	
+	<select id="getCount" resultType="java.lang.Long" parameterType="com.bdxh.kmsale.bean.code.ProductPo">
+	   select count(*) from T_PRODUCT a ,CODE_PRODUCT_TYPE b
+		where  a.PRODUCT_TYPE=b.CODE_ID
+	   <if test="productPo.productName != null and productPo.productName != ''">
+             AND a.PRODUCT_NAME like '%${productPo.productName}%'
+       </if>
+       <if test="productPo.productType != null and productPo.productType != ''" >
+             AND a.PRODUCT_TYPE = #{productPo.productType}
+       </if>
+       <if test="productPo.isView != null and productPo.isView != ''" >
+             AND a.IS_VIEW = #{productPo.isView}
+       </if>
+       <if test="productPo.isIh != null and productPo.isIh != ''" >
+             AND a.IS_IH = #{productPo.isIh}
+       </if>
+       <if test="productPo.isKh != null and productPo.isKh != ''" >
+             AND a.IS_KH = #{productPo.isKh}
+       </if>
+	  
+	   
+	</select>
+	
+	<select id="getList" resultType="com.bdxh.kmsale.bean.code.ProductPo" parameterType="com.bdxh.kmsale.bean.code.ProductPo">
+	   Select  PRODUCT_ID as "productId",
+                PRODUCT_NAME as "productName",
+         		PRODUCT_DESC as "productDesc",
+         		PRODUCT_TYPE as "productType",
+         		FOUR as "four",
+         		NONE_FOUR as "noneFour",
+         		ACTION as "action",
+         		IS_VIEW as "isView",
+         		B.CODE_DESC "productTypeDesc",
+         		a.IS_IH as "isIh",
+               a.IS_KH as "isKh" 
+        From 	T_PRODUCT a ,CODE_PRODUCT_TYPE b
+		where  a.PRODUCT_TYPE=b.CODE_ID 
+        
+      <if test="productPo.productName != null and productPo.productName != ''">
+             AND a.PRODUCT_NAME like '%${productPo.productName}%'
+       </if>
+       <if test="productPo.productType != null and productPo.productType != ''" >
+             AND a.PRODUCT_TYPE = #{productPo.productType}
+       </if>
+       <if test="productPo.isView != null and productPo.isView != ''" >
+             AND a.IS_VIEW = #{productPo.isView}
+       </if>
+       <if test="productPo.isIh != null and productPo.isIh != ''" >
+             AND a.IS_IH = #{productPo.isIh}
+       </if>
+       <if test="productPo.isKh != null and productPo.isKh != ''" >
+             AND a.IS_KH = #{productPo.isKh}
+       </if>
+	</select>
+	
+	<select id="getProductById" parameterType="java.lang.String" resultType="com.bdxh.kmsale.bean.code.ProductPo">
+		Select  PRODUCT_ID as "productId",
+                PRODUCT_NAME as "productName",
+         		PRODUCT_DESC as "productDesc",
+         		PRODUCT_TYPE as "productType",
+         		FOUR as "four",
+         		NONE_FOUR as "noneFour",
+         		ACTION as "action",
+         		IS_VIEW as "isView",
+         		B.CODE_DESC "productTypeDesc",
+         		a.IS_IH as "isIh",
+               a.IS_KH as "isKh" 
+        From 	T_PRODUCT a ,CODE_PRODUCT_TYPE b
+		where  a.PRODUCT_TYPE=b.CODE_ID and a.product_id = #{productId}
+	</select>
+	
+	<insert id="insertProduct" parameterType="com.bdxh.kmsale.bean.code.ProductPo">
+		Insert Into T_PRODUCT
+  			(PRODUCT_ID,
+   			PRODUCT_NAME,
+   			PRODUCT_DESC,
+   			PRODUCT_TYPE,
+   			FOUR,
+   			NONE_FOUR,
+   			ACTION,
+   			IS_VIEW,
+   			IS_IH ,
+            IS_KH 
+   			)
+			Values
+  			(seq_product_id.nextval,
+   			#{productPo.productName},
+   			#{productPo.productDesc},
+   			#{productPo.productType},
+   			#{productPo.four},
+   			#{productPo.noneFour},
+   			#{productPo.action},
+   			#{productPo.isView},
+   			#{productPo.isIh},
+   			#{productPo.isKh}
+   			)
+	</insert>
+	
+	<update id="updateProduct" parameterType="com.bdxh.kmsale.bean.code.ProductPo">
+		update T_PRODUCT a
+		
+		 <trim prefix="SET" suffixOverrides=",">
+            <if test="productPo.productName != null and productPo.productName !=''">
+                a.PRODUCT_NAME = #{productPo.productName},
+            </if>
+            <if test="productPo.productDesc != null and productPo.productDesc !=''">
+                a.PRODUCT_DESC = #{productPo.productDesc},
+            </if>
+            <if test="productPo.productType != null and productPo.productType !=''">
+                a.PRODUCT_TYPE = #{productPo.productType},
+            </if>
+            <if test="productPo.four != null and productPo.four !=''">
+                a.FOUR = #{productPo.four},
+            </if>
+            <if test="productPo.noneFour != null and productPo.noneFour !=''">
+                a.NONE_FOUR = #{productPo.noneFour},
+            </if>
+            <if test="productPo.action != null and productPo.action !=''">
+                a.ACTION = #{productPo.action},
+            </if>
+             <if test="productPo.isView != null">
+                a.IS_VIEW = #{productPo.isView},
+            </if>
+            <if test="productPo.isIh != null and productPo.isIh !=''">
+                a.IS_IH = #{productPo.isIh},
+            </if>
+            <if test="productPo.isKh != null and productPo.isKh !=''">
+                a.IS_KH = #{productPo.isKh},
+            </if>
+        </trim>
+		 where  a.product_id = #{productPo.productId}
+	</update>
+	
+	<update id="deleteProduct" parameterType="java.lang.String">
+		update T_PRODUCT a 
+		set    a.IS_VIEW = 0
+		where  a.product_id = #{productId}
+	</update>
+	
+	<select id="getAllProductType" resultType="com.bdxh.kmsale.bean.code.ProductTypePo">
+		select t.code_id as "codeId",
+		       t.code_desc as "codeDesc"
+		from   code_product_type t
+		where  t.status = 1
+		order  by t.ord
+	</select>
+</mapper>

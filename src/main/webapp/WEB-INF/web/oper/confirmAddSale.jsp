@@ -1,0 +1,108 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>业务管理-开发登记</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="format-detection" content="telephone=no">
+		<link rel="stylesheet" href="${pageContext.request.contextPath}/static/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/font_eolqem241z66flxr.css" media="all" />
+		<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/news.css" media="all" />
+	</head>
+
+	<body style="min-width: 1200px;">
+		<blockquote class="news_search" style="width: 80%;margin: auto;min-width: 1200px;">
+			<div class="recordhead">
+				<strong>批量登记>激活确认</strong>
+				<button>开卡记录</button>
+			</div>
+			<div class="layui-block" align="right">
+				<div class="layui-inline">
+					<a class="layui-btn layui-btn-normal">激活开关</a>
+				</div>
+				<div class="layui-inline">
+					<a class="layui-btn layui-btn-danger">不激活开关</a>
+				</div>
+				<div class="layui-inline">
+					<a class="layui-btn layui-btn">新增</a>
+				</div>
+			</div>
+			
+		</blockquote>
+		<div class="layui-form links_list" style="width: 80%;margin: auto;min-width: 1200px;">
+			<table class="layui-table">
+				<colgroup>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<td><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"></td>
+						<td>序号</td>
+						<th>开卡日期</th>
+						<th>业务代码</th>
+						<th>代理人姓名</th>
+						<th>手机号码</th>
+						<th>小卡卡号</th>
+						<th>面值</th>
+						<th>对账金额</th>
+						<th>套餐编号</th>
+						<th>配置设备编号</th>
+						<th>串号</th>
+					</tr>
+				</thead>
+				<tbody class="links_content">
+					<tr>
+						<td><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"/></td>
+						<td>1</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>正常开卡</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose" id="allChoose"/></td>
+						
+						<td>2</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>零元开卡开卡</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="page"></div>
+		<script src="${pageContext.request.contextPath}/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="${pageContext.request.contextPath}/static/layui/oper/confirm_add_sale.js" type="text/javascript" charset="utf-8"></script>
+
+	</body>
+
+</html>

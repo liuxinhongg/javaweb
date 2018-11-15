@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdxh.kmsale.mapper.system.DepartmentMapper">
+
+	<!-- 查询部门信息 -->
+	<select id="selectDepartmentList" parameterType="com.bdxh.kmsale.bean.system.Department" 
+	resultType="com.bdxh.kmsale.bean.system.Department">
+		select a.department "id",
+		a.department "deptId",
+		a.region_id "parentId",
+		a.department_desc "deptName",
+		a.address "address",
+		a.ord "ord",
+		(case when exists (select 1 from CODE_DEPARTMENT b where a.department =b.parent_dept and b.state='1') 
+		then 0 else 1 end) "leaf"
+		from CODE_DEPARTMENT a
+		where 1=1
+		<if test="parentDept!=null">
+		and a.parent_dept =#{parentDept} 
+		</if>
+		<if test="department!=null">
+		and a.department = #{department}
+		</if>
+		<if test="state!=null">
+		and a.state=#{state} 
+		</if>
+		order by a.department
+	</select>
+	
+	<!--新增部门 -->
+	<insert id="insertDepartment" parameterType="com.bdxh.kmsale.bean.system.Department">
+		insert into code_department (department,STATE,STATE_DATE, parent_dept,
+		department_desc,address,ord)
+		values (#{deptId},'1',sysdate,#{parentId}, #{deptName}, #{address},#{ord})
+	</insert>
+
+	<!--部门更新 -->
+	<update id="updateDepartment" parameterType="com.bdxh.kmsale.bean.system.Department">
+		update code_department set state_date=sysdate
+			<if test="deptName">
+				,department_desc=#{deptName}
+			</if>
+			<if test="address!=null">
+				,address=#{address}
+			</if>
+			<if test="ord">
+				,ord=#{ord}
+			</if>
+		where department=#{deptId}
+	</update>
+
+	<!-- 部门删除 -->
+	<delete id="deleteDepartment" parameterType="String">
+		delete from
+		code_department where department=#{deptId}
+	</delete>
+</mapper>
